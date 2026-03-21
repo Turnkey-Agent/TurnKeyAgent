@@ -1,0 +1,11 @@
+datasets/
+generated_videos/
+bridge/
+scripts/
+sql/
+docs/
+supabase/
+.claude/
+node_modules/
+*.pyc
+__pycache__/
