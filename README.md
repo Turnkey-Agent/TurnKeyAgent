@@ -4,6 +4,8 @@
 
 **Vercel x Google DeepMind Hackathon | March 21, 2026**
 
+> Architecture, implementation plan, and documentation by [Ben Shyong](https://github.com/Bshyong158)
+
 ![Architecture](docs/architecture-diagram.svg)
 
 ---
@@ -113,6 +115,13 @@ See the full [architecture diagram](docs/architecture-diagram.svg) and [detailed
 ---
 
 ## Team
+
+| Role | Name |
+|---|---|
+| **Product Lead / Architect** | Ben Shyong ([@Bshyong158](https://github.com/Bshyong158)) |
+| **Voice Engineer** | Ayush Ojha ([@ayushozha](https://github.com/ayushozha)) |
+| **Frontend** | TBD |
+| **Orchestration** | TBD |
 
 Built for the Vercel x Google DeepMind Hackathon, March 2026.
 
