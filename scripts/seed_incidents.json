@@ -1,0 +1,2520 @@
+[
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "plumbing",
+    "description": "Water supply line under kitchen sink spraying when faucet is on",
+    "guest_phone": "(415) 555-0103",
+    "urgency": "high",
+    "quotes": [
+      {
+        "vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+        "amount": 277,
+        "eta_days": 1,
+        "notes": "Emergency supply line replacement"
+      }
+    ],
+    "selected_vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2021-01-28T17:13:00Z",
+    "scheduled_at": "2021-01-29T19:13:00Z",
+    "resolved_at": "2021-01-29T21:31:00Z",
+    "timeline": [
+      {
+        "timestamp": "2021-01-27T16:13:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: water supply line under kitchen sink spraying when faucet is on"
+      },
+      {
+        "timestamp": "2021-01-27T17:02:12Z",
+        "event": "vendor_contacted",
+        "details": "Called Bay Area Premier Plumbing for quote"
+      },
+      {
+        "timestamp": "2021-01-28T17:13:00Z",
+        "event": "approved",
+        "details": "Landlord approved $277 quote"
+      },
+      {
+        "timestamp": "2021-01-29T19:13:00Z",
+        "event": "vendor_arrived",
+        "details": "Bay Area Premier Plumbing technician on site"
+      },
+      {
+        "timestamp": "2021-01-29T21:31:00Z",
+        "event": "resolved",
+        "details": "Braided supply line replaced, fittings tightened"
+      }
+    ],
+    "created_at": "2021-01-27T16:13:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "plumbing",
+    "description": "Leaking bathroom faucet causing water stain on counter",
+    "guest_phone": "(415) 555-0102",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 185,
+        "eta_days": 1,
+        "notes": "Standard faucet cartridge replacement"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2021-01-29T10:37:00Z",
+    "scheduled_at": "2021-01-29T19:37:00Z",
+    "resolved_at": "2021-01-29T23:14:12Z",
+    "timeline": [
+      {
+        "timestamp": "2021-01-28T11:37:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: leaking bathroom faucet causing water stain on counter"
+      },
+      {
+        "timestamp": "2021-01-28T13:26:48Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2021-01-29T10:37:00Z",
+        "event": "approved",
+        "details": "Landlord approved $185 quote"
+      },
+      {
+        "timestamp": "2021-01-29T19:37:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2021-01-29T23:14:12Z",
+        "event": "resolved",
+        "details": "Faucet cartridge replaced, no more dripping"
+      }
+    ],
+    "created_at": "2021-01-28T11:37:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "plumbing",
+    "description": "Bathtub drain very slow, water not draining during shower",
+    "guest_phone": "(415) 555-0107",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 240,
+        "eta_days": 1,
+        "notes": "Snake drain and inspect trap assembly"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2021-03-12T02:15:00Z",
+    "scheduled_at": "2021-03-12T12:15:00Z",
+    "resolved_at": "2021-03-12T15:22:48Z",
+    "timeline": [
+      {
+        "timestamp": "2021-03-11T09:15:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: bathtub drain very slow, water not draining during shower"
+      },
+      {
+        "timestamp": "2021-03-11T10:56:24Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2021-03-12T02:15:00Z",
+        "event": "approved",
+        "details": "Landlord approved $240 quote"
+      },
+      {
+        "timestamp": "2021-03-12T12:15:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2021-03-12T15:22:48Z",
+        "event": "resolved",
+        "details": "Hair and soap clog removed, drain flowing freely"
+      }
+    ],
+    "created_at": "2021-03-11T09:15:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "plumbing",
+    "description": "Toilet running continuously, water bill concern",
+    "guest_phone": "(415) 555-0107",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+        "amount": 154,
+        "eta_days": 1,
+        "notes": "Flapper valve and fill valve inspection"
+      },
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 134,
+        "eta_days": 2,
+        "notes": "Flapper valve and fill valve inspection (alternate quote)"
+      }
+    ],
+    "selected_vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2021-04-19T06:44:00Z",
+    "scheduled_at": "2021-04-19T20:44:00Z",
+    "resolved_at": "2021-04-20T00:40:24Z",
+    "timeline": [
+      {
+        "timestamp": "2021-04-18T14:44:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: toilet running continuously, water bill concern"
+      },
+      {
+        "timestamp": "2021-04-18T16:14:00Z",
+        "event": "vendor_contacted",
+        "details": "Called Bay Area Premier Plumbing for quote"
+      },
+      {
+        "timestamp": "2021-04-19T06:44:00Z",
+        "event": "approved",
+        "details": "Landlord approved $154 quote"
+      },
+      {
+        "timestamp": "2021-04-19T20:44:00Z",
+        "event": "vendor_arrived",
+        "details": "Bay Area Premier Plumbing technician on site"
+      },
+      {
+        "timestamp": "2021-04-20T00:40:24Z",
+        "event": "resolved",
+        "details": "Replaced flapper and adjusted fill valve"
+      }
+    ],
+    "created_at": "2021-04-18T14:44:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "plumbing",
+    "description": "Toilet leaking at base, water seeping onto floor when flushed",
+    "guest_phone": "(415) 555-0105",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 338,
+        "eta_days": 1,
+        "notes": "Wax ring replacement, reseat toilet"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2021-06-27T20:25:00Z",
+    "scheduled_at": "2021-06-28T23:25:00Z",
+    "resolved_at": "2021-06-29T01:33:24Z",
+    "timeline": [
+      {
+        "timestamp": "2021-06-26T12:25:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: toilet leaking at base, water seeping onto floor when flushed"
+      },
+      {
+        "timestamp": "2021-06-26T12:57:24Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2021-06-27T20:25:00Z",
+        "event": "approved",
+        "details": "Landlord approved $338 quote"
+      },
+      {
+        "timestamp": "2021-06-28T23:25:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2021-06-29T01:33:24Z",
+        "event": "resolved",
+        "details": "Toilet removed, new wax ring installed, reseated and caulked"
+      }
+    ],
+    "created_at": "2021-06-26T12:25:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "plumbing",
+    "description": "Shower valve handle hard to turn and temperature unstable",
+    "guest_phone": "(415) 555-0107",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 523,
+        "eta_days": 2,
+        "notes": "Pressure balance cartridge replacement"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2021-08-07T04:41:00Z",
+    "scheduled_at": "2021-08-07T22:41:00Z",
+    "resolved_at": "2021-08-08T00:30:48Z",
+    "timeline": [
+      {
+        "timestamp": "2021-08-06T13:41:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: shower valve handle hard to turn and temperature unstable"
+      },
+      {
+        "timestamp": "2021-08-06T14:28:24Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2021-08-07T04:41:00Z",
+        "event": "approved",
+        "details": "Landlord approved $523 quote"
+      },
+      {
+        "timestamp": "2021-08-07T22:41:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2021-08-08T00:30:48Z",
+        "event": "resolved",
+        "details": "New cartridge installed, temperature control smooth"
+      }
+    ],
+    "created_at": "2021-08-06T13:41:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "plumbing",
+    "description": "Garbage disposal jammed and humming loudly",
+    "guest_phone": "(415) 555-0104",
+    "urgency": "low",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 117,
+        "eta_days": 2,
+        "notes": "Clear jam, inspect motor"
+      },
+      {
+        "vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+        "amount": 109,
+        "eta_days": 3,
+        "notes": "Clear jam, inspect motor (alternate quote)"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2021-10-07T22:08:00Z",
+    "scheduled_at": "2021-10-09T06:08:00Z",
+    "resolved_at": "2021-10-09T09:36:12Z",
+    "timeline": [
+      {
+        "timestamp": "2021-10-06T15:08:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: garbage disposal jammed and humming loudly"
+      },
+      {
+        "timestamp": "2021-10-06T17:02:36Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2021-10-07T22:08:00Z",
+        "event": "approved",
+        "details": "Landlord approved $117 quote"
+      },
+      {
+        "timestamp": "2021-10-09T06:08:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2021-10-09T09:36:12Z",
+        "event": "resolved",
+        "details": "Removed foreign object from disposal, motor runs clean"
+      }
+    ],
+    "created_at": "2021-10-06T15:08:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "plumbing",
+    "description": "Water heater making popping sounds, lukewarm water only",
+    "guest_phone": "(415) 555-0102",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 363,
+        "eta_days": 1,
+        "notes": "Flush tank, replace anode rod"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2021-10-29T21:19:00Z",
+    "scheduled_at": "2021-10-31T11:19:00Z",
+    "resolved_at": "2021-10-31T14:01:36Z",
+    "timeline": [
+      {
+        "timestamp": "2021-10-29T08:19:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: water heater making popping sounds, lukewarm water only"
+      },
+      {
+        "timestamp": "2021-10-29T08:41:12Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2021-10-29T21:19:00Z",
+        "event": "approved",
+        "details": "Landlord approved $363 quote"
+      },
+      {
+        "timestamp": "2021-10-31T11:19:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2021-10-31T14:01:36Z",
+        "event": "resolved",
+        "details": "Sediment flushed, anode rod replaced, water hot again"
+      }
+    ],
+    "created_at": "2021-10-29T08:19:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "plumbing",
+    "description": "Kitchen sink completely backed up and overflowing",
+    "guest_phone": "(415) 555-0101",
+    "urgency": "high",
+    "quotes": [
+      {
+        "vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+        "amount": 351,
+        "eta_days": 1,
+        "notes": "Emergency drain clearing, possible P-trap replacement"
+      },
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 383,
+        "eta_days": 2,
+        "notes": "Emergency drain clearing, possible P-trap replacement (alternate quote)"
+      }
+    ],
+    "selected_vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2021-11-01T11:25:00Z",
+    "scheduled_at": "2021-11-03T02:25:00Z",
+    "resolved_at": "2021-11-03T04:11:48Z",
+    "timeline": [
+      {
+        "timestamp": "2021-10-31T14:25:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: kitchen sink completely backed up and overflowing"
+      },
+      {
+        "timestamp": "2021-10-31T15:34:36Z",
+        "event": "vendor_contacted",
+        "details": "Called Bay Area Premier Plumbing for quote"
+      },
+      {
+        "timestamp": "2021-11-01T11:25:00Z",
+        "event": "approved",
+        "details": "Landlord approved $351 quote"
+      },
+      {
+        "timestamp": "2021-11-03T02:25:00Z",
+        "event": "vendor_arrived",
+        "details": "Bay Area Premier Plumbing technician on site"
+      },
+      {
+        "timestamp": "2021-11-03T04:11:48Z",
+        "event": "resolved",
+        "details": "Grease blockage cleared, P-trap replaced"
+      }
+    ],
+    "created_at": "2021-10-31T14:25:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "plumbing",
+    "description": "No hot water, water heater pilot light keeps going out",
+    "guest_phone": "(415) 555-0107",
+    "urgency": "high",
+    "quotes": [
+      {
+        "vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+        "amount": 431,
+        "eta_days": 1,
+        "notes": "Thermocouple replacement and burner cleaning"
+      }
+    ],
+    "selected_vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2021-11-21T06:14:00Z",
+    "scheduled_at": "2021-11-21T16:14:00Z",
+    "resolved_at": "2021-11-21T18:47:00Z",
+    "timeline": [
+      {
+        "timestamp": "2021-11-20T13:14:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: no hot water, water heater pilot light keeps going out"
+      },
+      {
+        "timestamp": "2021-11-20T13:38:00Z",
+        "event": "vendor_contacted",
+        "details": "Called Bay Area Premier Plumbing for quote"
+      },
+      {
+        "timestamp": "2021-11-21T06:14:00Z",
+        "event": "approved",
+        "details": "Landlord approved $431 quote"
+      },
+      {
+        "timestamp": "2021-11-21T16:14:00Z",
+        "event": "vendor_arrived",
+        "details": "Bay Area Premier Plumbing technician on site"
+      },
+      {
+        "timestamp": "2021-11-21T18:47:00Z",
+        "event": "resolved",
+        "details": "New thermocouple installed, burner cleaned, hot water restored"
+      }
+    ],
+    "created_at": "2021-11-20T13:14:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "plumbing",
+    "description": "Shower head barely producing any water pressure",
+    "guest_phone": "(415) 555-0104",
+    "urgency": "low",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 148,
+        "eta_days": 2,
+        "notes": "Descale and replace shower head and arm"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2021-12-13T10:06:00Z",
+    "scheduled_at": "2021-12-14T12:06:00Z",
+    "resolved_at": "2021-12-14T15:03:00Z",
+    "timeline": [
+      {
+        "timestamp": "2021-12-12T20:06:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: shower head barely producing any water pressure"
+      },
+      {
+        "timestamp": "2021-12-12T20:55:48Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2021-12-13T10:06:00Z",
+        "event": "approved",
+        "details": "Landlord approved $148 quote"
+      },
+      {
+        "timestamp": "2021-12-14T12:06:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2021-12-14T15:03:00Z",
+        "event": "resolved",
+        "details": "Shower head and arm replaced, full pressure restored"
+      }
+    ],
+    "created_at": "2021-12-12T20:06:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "plumbing",
+    "description": "Water dripping from ceiling below upstairs bathroom",
+    "guest_phone": "(415) 555-0108",
+    "urgency": "high",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 584,
+        "eta_days": 1,
+        "notes": "Emergency leak detection and pipe repair"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2021-12-24T16:52:00Z",
+    "scheduled_at": "2021-12-25T23:52:00Z",
+    "resolved_at": "2021-12-26T01:39:24Z",
+    "timeline": [
+      {
+        "timestamp": "2021-12-23T11:52:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: water dripping from ceiling below upstairs bathroom"
+      },
+      {
+        "timestamp": "2021-12-23T12:08:48Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2021-12-24T16:52:00Z",
+        "event": "approved",
+        "details": "Landlord approved $584 quote"
+      },
+      {
+        "timestamp": "2021-12-25T23:52:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2021-12-26T01:39:24Z",
+        "event": "resolved",
+        "details": "Pinhole leak in copper supply line repaired with coupling"
+      }
+    ],
+    "created_at": "2021-12-23T11:52:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "electrical",
+    "description": "Circuit breaker for living room keeps tripping when TV and heater are on",
+    "guest_phone": "(415) 555-0120",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+        "amount": 461,
+        "eta_days": 1,
+        "notes": "Circuit evaluation, possible dedicated circuit needed"
+      }
+    ],
+    "selected_vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2022-01-03T13:02:00Z",
+    "scheduled_at": "2022-01-04T14:02:00Z",
+    "resolved_at": "2022-01-04T16:43:24Z",
+    "timeline": [
+      {
+        "timestamp": "2022-01-02T18:02:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: circuit breaker for living room keeps tripping when TV and heater are on"
+      },
+      {
+        "timestamp": "2022-01-02T18:52:24Z",
+        "event": "vendor_contacted",
+        "details": "Called Sparky's Electric for quote"
+      },
+      {
+        "timestamp": "2022-01-03T13:02:00Z",
+        "event": "approved",
+        "details": "Landlord approved $461 quote"
+      },
+      {
+        "timestamp": "2022-01-04T14:02:00Z",
+        "event": "vendor_arrived",
+        "details": "Sparky's Electric technician on site"
+      },
+      {
+        "timestamp": "2022-01-04T16:43:24Z",
+        "event": "resolved",
+        "details": "Dedicated 20A circuit installed for living room"
+      }
+    ],
+    "created_at": "2022-01-02T18:02:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "plumbing",
+    "description": "Both bathroom sink faucet handles leaking when turned off",
+    "guest_phone": "(415) 555-0120",
+    "urgency": "low",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 228,
+        "eta_days": 2,
+        "notes": "Replace valve stems and seats in both handles"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2022-02-10T04:30:00Z",
+    "scheduled_at": "2022-02-11T23:30:00Z",
+    "resolved_at": "2022-02-12T03:22:48Z",
+    "timeline": [
+      {
+        "timestamp": "2022-02-09T10:30:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: both bathroom sink faucet handles leaking when turned off"
+      },
+      {
+        "timestamp": "2022-02-09T11:13:12Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2022-02-10T04:30:00Z",
+        "event": "approved",
+        "details": "Landlord approved $228 quote"
+      },
+      {
+        "timestamp": "2022-02-11T23:30:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2022-02-12T03:22:48Z",
+        "event": "resolved",
+        "details": "Valve stems and seats replaced, no more drips"
+      }
+    ],
+    "created_at": "2022-02-09T10:30:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "plumbing",
+    "description": "Kitchen faucet sprayer hose leaking inside cabinet",
+    "guest_phone": "(415) 555-0120",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+        "amount": 203,
+        "eta_days": 1,
+        "notes": "Replace sprayer hose and diverter"
+      }
+    ],
+    "selected_vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2022-02-10T19:42:00Z",
+    "scheduled_at": "2022-02-11T18:42:00Z",
+    "resolved_at": "2022-02-11T22:20:24Z",
+    "timeline": [
+      {
+        "timestamp": "2022-02-10T07:42:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: kitchen faucet sprayer hose leaking inside cabinet"
+      },
+      {
+        "timestamp": "2022-02-10T09:30:00Z",
+        "event": "vendor_contacted",
+        "details": "Called Bay Area Premier Plumbing for quote"
+      },
+      {
+        "timestamp": "2022-02-10T19:42:00Z",
+        "event": "approved",
+        "details": "Landlord approved $203 quote"
+      },
+      {
+        "timestamp": "2022-02-11T18:42:00Z",
+        "event": "vendor_arrived",
+        "details": "Bay Area Premier Plumbing technician on site"
+      },
+      {
+        "timestamp": "2022-02-11T22:20:24Z",
+        "event": "resolved",
+        "details": "New sprayer hose installed, diverter cleaned"
+      }
+    ],
+    "created_at": "2022-02-10T07:42:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "electrical",
+    "description": "Smoke detector in hallway chirping every 30 seconds despite new battery",
+    "guest_phone": "(415) 555-0120",
+    "urgency": "low",
+    "quotes": [
+      {
+        "vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+        "amount": 141,
+        "eta_days": 2,
+        "notes": "Replace end-of-life detector"
+      }
+    ],
+    "selected_vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2022-03-07T14:53:00Z",
+    "scheduled_at": "2022-03-09T04:53:00Z",
+    "resolved_at": "2022-03-09T06:29:00Z",
+    "timeline": [
+      {
+        "timestamp": "2022-03-06T15:53:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: smoke detector in hallway chirping every 30 seconds despite new battery"
+      },
+      {
+        "timestamp": "2022-03-06T17:24:12Z",
+        "event": "vendor_contacted",
+        "details": "Called Sparky's Electric for quote"
+      },
+      {
+        "timestamp": "2022-03-07T14:53:00Z",
+        "event": "approved",
+        "details": "Landlord approved $141 quote"
+      },
+      {
+        "timestamp": "2022-03-09T04:53:00Z",
+        "event": "vendor_arrived",
+        "details": "Sparky's Electric technician on site"
+      },
+      {
+        "timestamp": "2022-03-09T06:29:00Z",
+        "event": "resolved",
+        "details": "New photoelectric smoke detector installed"
+      }
+    ],
+    "created_at": "2022-03-06T15:53:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "electrical",
+    "description": "Kitchen GFCI outlet keeps tripping, can't use countertop appliances",
+    "guest_phone": "(415) 555-0120",
+    "urgency": "high",
+    "quotes": [
+      {
+        "vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+        "amount": 277,
+        "eta_days": 1,
+        "notes": "GFCI outlet replacement, check wiring"
+      }
+    ],
+    "selected_vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2022-03-13T00:44:00Z",
+    "scheduled_at": "2022-03-14T20:44:00Z",
+    "resolved_at": "2022-03-15T00:03:48Z",
+    "timeline": [
+      {
+        "timestamp": "2022-03-12T10:44:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: kitchen GFCI outlet keeps tripping, can't use countertop appliances"
+      },
+      {
+        "timestamp": "2022-03-12T11:58:24Z",
+        "event": "vendor_contacted",
+        "details": "Called Sparky's Electric for quote"
+      },
+      {
+        "timestamp": "2022-03-13T00:44:00Z",
+        "event": "approved",
+        "details": "Landlord approved $277 quote"
+      },
+      {
+        "timestamp": "2022-03-14T20:44:00Z",
+        "event": "vendor_arrived",
+        "details": "Sparky's Electric technician on site"
+      },
+      {
+        "timestamp": "2022-03-15T00:03:48Z",
+        "event": "resolved",
+        "details": "GFCI outlet replaced, wiring secured"
+      }
+    ],
+    "created_at": "2022-03-12T10:44:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "electrical",
+    "description": "Bathroom vanity light fixture completely dead, no power to fixture",
+    "guest_phone": "(415) 555-0120",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+        "amount": 240,
+        "eta_days": 1,
+        "notes": "Diagnose wiring, replace fixture if needed"
+      }
+    ],
+    "selected_vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2022-05-24T02:43:00Z",
+    "scheduled_at": "2022-05-24T20:43:00Z",
+    "resolved_at": "2022-05-25T00:10:00Z",
+    "timeline": [
+      {
+        "timestamp": "2022-05-22T20:43:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: bathroom vanity light fixture completely dead, no power to fixture"
+      },
+      {
+        "timestamp": "2022-05-22T22:26:12Z",
+        "event": "vendor_contacted",
+        "details": "Called Sparky's Electric for quote"
+      },
+      {
+        "timestamp": "2022-05-24T02:43:00Z",
+        "event": "approved",
+        "details": "Landlord approved $240 quote"
+      },
+      {
+        "timestamp": "2022-05-24T20:43:00Z",
+        "event": "vendor_arrived",
+        "details": "Sparky's Electric technician on site"
+      },
+      {
+        "timestamp": "2022-05-25T00:10:00Z",
+        "event": "resolved",
+        "details": "Loose neutral wire reconnected, fixture working"
+      }
+    ],
+    "created_at": "2022-05-22T20:43:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "electrical",
+    "description": "Dimmer switch in dining room buzzing and not dimming properly",
+    "guest_phone": "(415) 555-0120",
+    "urgency": "low",
+    "quotes": [
+      {
+        "vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+        "amount": 178,
+        "eta_days": 2,
+        "notes": "Replace with LED-compatible dimmer"
+      }
+    ],
+    "selected_vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2022-09-19T21:34:00Z",
+    "scheduled_at": "2022-09-20T13:34:00Z",
+    "resolved_at": "2022-09-20T17:15:24Z",
+    "timeline": [
+      {
+        "timestamp": "2022-09-18T11:34:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: dimmer switch in dining room buzzing and not dimming properly"
+      },
+      {
+        "timestamp": "2022-09-18T12:32:12Z",
+        "event": "vendor_contacted",
+        "details": "Called Sparky's Electric for quote"
+      },
+      {
+        "timestamp": "2022-09-19T21:34:00Z",
+        "event": "approved",
+        "details": "Landlord approved $178 quote"
+      },
+      {
+        "timestamp": "2022-09-20T13:34:00Z",
+        "event": "vendor_arrived",
+        "details": "Sparky's Electric technician on site"
+      },
+      {
+        "timestamp": "2022-09-20T17:15:24Z",
+        "event": "resolved",
+        "details": "New LED dimmer installed, operates smoothly"
+      }
+    ],
+    "created_at": "2022-09-18T11:34:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "electrical",
+    "description": "Overhead light in kitchen flickering and buzzing constantly",
+    "guest_phone": "(415) 555-0120",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+        "amount": 228,
+        "eta_days": 1,
+        "notes": "Fixture replacement and wire connection check"
+      }
+    ],
+    "selected_vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2022-09-19T03:12:00Z",
+    "scheduled_at": "2022-09-20T18:12:00Z",
+    "resolved_at": "2022-09-20T20:11:24Z",
+    "timeline": [
+      {
+        "timestamp": "2022-09-18T13:12:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: overhead light in kitchen flickering and buzzing constantly"
+      },
+      {
+        "timestamp": "2022-09-18T14:27:36Z",
+        "event": "vendor_contacted",
+        "details": "Called Sparky's Electric for quote"
+      },
+      {
+        "timestamp": "2022-09-19T03:12:00Z",
+        "event": "approved",
+        "details": "Landlord approved $228 quote"
+      },
+      {
+        "timestamp": "2022-09-20T18:12:00Z",
+        "event": "vendor_arrived",
+        "details": "Sparky's Electric technician on site"
+      },
+      {
+        "timestamp": "2022-09-20T20:11:24Z",
+        "event": "resolved",
+        "details": "New LED fixture installed, loose connections tightened"
+      }
+    ],
+    "created_at": "2022-09-18T13:12:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "electrical",
+    "description": "Bedroom outlet sparking when plugging in phone charger",
+    "guest_phone": "(415) 555-0120",
+    "urgency": "high",
+    "quotes": [
+      {
+        "vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+        "amount": 338,
+        "eta_days": 1,
+        "notes": "Emergency outlet replacement and wiring inspection"
+      }
+    ],
+    "selected_vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2023-01-01T19:21:00Z",
+    "scheduled_at": "2023-01-02T20:21:00Z",
+    "resolved_at": "2023-01-03T00:13:48Z",
+    "timeline": [
+      {
+        "timestamp": "2022-12-31T16:21:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: bedroom outlet sparking when plugging in phone charger"
+      },
+      {
+        "timestamp": "2022-12-31T17:24:00Z",
+        "event": "vendor_contacted",
+        "details": "Called Sparky's Electric for quote"
+      },
+      {
+        "timestamp": "2023-01-01T19:21:00Z",
+        "event": "approved",
+        "details": "Landlord approved $338 quote"
+      },
+      {
+        "timestamp": "2023-01-02T20:21:00Z",
+        "event": "vendor_arrived",
+        "details": "Sparky's Electric technician on site"
+      },
+      {
+        "timestamp": "2023-01-03T00:13:48Z",
+        "event": "resolved",
+        "details": "Arc-damaged receptacle replaced, wiring inspected"
+      }
+    ],
+    "created_at": "2022-12-31T16:21:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "plumbing",
+    "description": "Bathroom sink pop-up drain stopper stuck in closed position",
+    "guest_phone": "(415) 555-0120",
+    "urgency": "low",
+    "quotes": [
+      {
+        "vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+        "amount": 135,
+        "eta_days": 2,
+        "notes": "Repair or replace pop-up assembly"
+      }
+    ],
+    "selected_vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2023-01-01T05:49:00Z",
+    "scheduled_at": "2023-01-02T10:49:00Z",
+    "resolved_at": "2023-01-02T12:42:24Z",
+    "timeline": [
+      {
+        "timestamp": "2022-12-31T16:49:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: bathroom sink pop-up drain stopper stuck in closed position"
+      },
+      {
+        "timestamp": "2022-12-31T18:19:36Z",
+        "event": "vendor_contacted",
+        "details": "Called Bay Area Premier Plumbing for quote"
+      },
+      {
+        "timestamp": "2023-01-01T05:49:00Z",
+        "event": "approved",
+        "details": "Landlord approved $135 quote"
+      },
+      {
+        "timestamp": "2023-01-02T10:49:00Z",
+        "event": "vendor_arrived",
+        "details": "Bay Area Premier Plumbing technician on site"
+      },
+      {
+        "timestamp": "2023-01-02T12:42:24Z",
+        "event": "resolved",
+        "details": "Pop-up linkage repaired, drain stopper working"
+      }
+    ],
+    "created_at": "2022-12-31T16:49:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "appliance",
+    "description": "Dishwasher not draining, standing water at bottom after cycle",
+    "guest_phone": "(415) 555-0135",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+        "amount": 240,
+        "eta_days": 1,
+        "notes": "Clear drain pump, check valve"
+      }
+    ],
+    "selected_vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2023-02-01T17:30:00Z",
+    "scheduled_at": "2023-02-03T13:30:00Z",
+    "resolved_at": "2023-02-03T17:27:36Z",
+    "timeline": [
+      {
+        "timestamp": "2023-01-31T15:30:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: dishwasher not draining, standing water at bottom after cycle"
+      },
+      {
+        "timestamp": "2023-01-31T16:12:36Z",
+        "event": "vendor_contacted",
+        "details": "Called CoolBreeze HVAC for quote"
+      },
+      {
+        "timestamp": "2023-02-01T17:30:00Z",
+        "event": "approved",
+        "details": "Landlord approved $240 quote"
+      },
+      {
+        "timestamp": "2023-02-03T13:30:00Z",
+        "event": "vendor_arrived",
+        "details": "CoolBreeze HVAC technician on site"
+      },
+      {
+        "timestamp": "2023-02-03T17:27:36Z",
+        "event": "resolved",
+        "details": "Drain pump filter cleaned, check valve freed"
+      }
+    ],
+    "created_at": "2023-01-31T15:30:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "hvac",
+    "description": "Wall heater not igniting, pilot light won't stay lit",
+    "guest_phone": "(415) 555-0135",
+    "urgency": "high",
+    "quotes": [
+      {
+        "vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+        "amount": 363,
+        "eta_days": 1,
+        "notes": "Replace thermocouple, clean pilot orifice"
+      }
+    ],
+    "selected_vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2023-02-28T19:21:00Z",
+    "scheduled_at": "2023-03-01T22:21:00Z",
+    "resolved_at": "2023-03-02T01:50:24Z",
+    "timeline": [
+      {
+        "timestamp": "2023-02-27T20:21:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: wall heater not igniting, pilot light won't stay lit"
+      },
+      {
+        "timestamp": "2023-02-27T21:45:00Z",
+        "event": "vendor_contacted",
+        "details": "Called CoolBreeze HVAC for quote"
+      },
+      {
+        "timestamp": "2023-02-28T19:21:00Z",
+        "event": "approved",
+        "details": "Landlord approved $363 quote"
+      },
+      {
+        "timestamp": "2023-03-01T22:21:00Z",
+        "event": "vendor_arrived",
+        "details": "CoolBreeze HVAC technician on site"
+      },
+      {
+        "timestamp": "2023-03-02T01:50:24Z",
+        "event": "resolved",
+        "details": "New thermocouple installed, pilot orifice cleaned"
+      }
+    ],
+    "created_at": "2023-02-27T20:21:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "hvac",
+    "description": "No heat in unit, thermostat set to 72 but radiators are cold",
+    "guest_phone": "(415) 555-0135",
+    "urgency": "high",
+    "quotes": [
+      {
+        "vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+        "amount": 431,
+        "eta_days": 1,
+        "notes": "Bleed radiators, check zone valve"
+      }
+    ],
+    "selected_vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2023-03-13T07:14:00Z",
+    "scheduled_at": "2023-03-14T16:14:00Z",
+    "resolved_at": "2023-03-14T19:50:36Z",
+    "timeline": [
+      {
+        "timestamp": "2023-03-12T19:14:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: no heat in unit, thermostat set to 72 but radiators are cold"
+      },
+      {
+        "timestamp": "2023-03-12T19:47:00Z",
+        "event": "vendor_contacted",
+        "details": "Called CoolBreeze HVAC for quote"
+      },
+      {
+        "timestamp": "2023-03-13T07:14:00Z",
+        "event": "approved",
+        "details": "Landlord approved $431 quote"
+      },
+      {
+        "timestamp": "2023-03-14T16:14:00Z",
+        "event": "vendor_arrived",
+        "details": "CoolBreeze HVAC technician on site"
+      },
+      {
+        "timestamp": "2023-03-14T19:50:36Z",
+        "event": "resolved",
+        "details": "Air bled from radiators, stuck zone valve replaced"
+      }
+    ],
+    "created_at": "2023-03-12T19:14:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "hvac",
+    "description": "Furnace making loud banging sound on startup then shutting off",
+    "guest_phone": "(415) 555-0135",
+    "urgency": "high",
+    "quotes": [
+      {
+        "vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+        "amount": 523,
+        "eta_days": 1,
+        "notes": "Clean burners, inspect igniter and gas valve"
+      }
+    ],
+    "selected_vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2023-04-08T17:53:00Z",
+    "scheduled_at": "2023-04-09T04:53:00Z",
+    "resolved_at": "2023-04-09T08:08:00Z",
+    "timeline": [
+      {
+        "timestamp": "2023-04-07T13:53:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: furnace making loud banging sound on startup then shutting off"
+      },
+      {
+        "timestamp": "2023-04-07T15:51:12Z",
+        "event": "vendor_contacted",
+        "details": "Called CoolBreeze HVAC for quote"
+      },
+      {
+        "timestamp": "2023-04-08T17:53:00Z",
+        "event": "approved",
+        "details": "Landlord approved $523 quote"
+      },
+      {
+        "timestamp": "2023-04-09T04:53:00Z",
+        "event": "vendor_arrived",
+        "details": "CoolBreeze HVAC technician on site"
+      },
+      {
+        "timestamp": "2023-04-09T08:08:00Z",
+        "event": "resolved",
+        "details": "Dirty burners cleaned, cracked igniter replaced"
+      }
+    ],
+    "created_at": "2023-04-07T13:53:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "hvac",
+    "description": "Bathroom exhaust fan extremely loud and barely pulling air",
+    "guest_phone": "(415) 555-0135",
+    "urgency": "low",
+    "quotes": [
+      {
+        "vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+        "amount": 338,
+        "eta_days": 2,
+        "notes": "Replace fan motor, clean duct"
+      }
+    ],
+    "selected_vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2023-05-16T20:31:00Z",
+    "scheduled_at": "2023-05-17T02:31:00Z",
+    "resolved_at": "2023-05-17T05:00:24Z",
+    "timeline": [
+      {
+        "timestamp": "2023-05-15T15:31:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: bathroom exhaust fan extremely loud and barely pulling air"
+      },
+      {
+        "timestamp": "2023-05-15T16:49:36Z",
+        "event": "vendor_contacted",
+        "details": "Called CoolBreeze HVAC for quote"
+      },
+      {
+        "timestamp": "2023-05-16T20:31:00Z",
+        "event": "approved",
+        "details": "Landlord approved $338 quote"
+      },
+      {
+        "timestamp": "2023-05-17T02:31:00Z",
+        "event": "vendor_arrived",
+        "details": "CoolBreeze HVAC technician on site"
+      },
+      {
+        "timestamp": "2023-05-17T05:00:24Z",
+        "event": "resolved",
+        "details": "New 110 CFM fan unit installed, duct cleaned"
+      }
+    ],
+    "created_at": "2023-05-15T15:31:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "electrical",
+    "description": "Ceiling fan wobbling dangerously and making clicking noise",
+    "guest_phone": "(415) 555-0135",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+        "amount": 240,
+        "eta_days": 1,
+        "notes": "Balance blades and tighten mounting"
+      }
+    ],
+    "selected_vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2023-10-22T12:06:00Z",
+    "scheduled_at": "2023-10-23T07:06:00Z",
+    "resolved_at": "2023-10-23T09:47:24Z",
+    "timeline": [
+      {
+        "timestamp": "2023-10-21T08:06:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: ceiling fan wobbling dangerously and making clicking noise"
+      },
+      {
+        "timestamp": "2023-10-21T08:52:12Z",
+        "event": "vendor_contacted",
+        "details": "Called Sparky's Electric for quote"
+      },
+      {
+        "timestamp": "2023-10-22T12:06:00Z",
+        "event": "approved",
+        "details": "Landlord approved $240 quote"
+      },
+      {
+        "timestamp": "2023-10-23T07:06:00Z",
+        "event": "vendor_arrived",
+        "details": "Sparky's Electric technician on site"
+      },
+      {
+        "timestamp": "2023-10-23T09:47:24Z",
+        "event": "resolved",
+        "details": "Fan balanced, mounting bracket secured to junction box"
+      }
+    ],
+    "created_at": "2023-10-21T08:06:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "hvac",
+    "description": "Musty smell from HVAC vents when system first turns on",
+    "guest_phone": "(415) 555-0135",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+        "amount": 474,
+        "eta_days": 2,
+        "notes": "Duct cleaning and mold treatment"
+      }
+    ],
+    "selected_vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2023-12-03T19:30:00Z",
+    "scheduled_at": "2023-12-05T18:30:00Z",
+    "resolved_at": "2023-12-05T20:27:36Z",
+    "timeline": [
+      {
+        "timestamp": "2023-12-02T19:30:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: musty smell from HVAC vents when system first turns on"
+      },
+      {
+        "timestamp": "2023-12-02T21:28:48Z",
+        "event": "vendor_contacted",
+        "details": "Called CoolBreeze HVAC for quote"
+      },
+      {
+        "timestamp": "2023-12-03T19:30:00Z",
+        "event": "approved",
+        "details": "Landlord approved $474 quote"
+      },
+      {
+        "timestamp": "2023-12-05T18:30:00Z",
+        "event": "vendor_arrived",
+        "details": "CoolBreeze HVAC technician on site"
+      },
+      {
+        "timestamp": "2023-12-05T20:27:36Z",
+        "event": "resolved",
+        "details": "Ductwork professionally cleaned, mold treated in drip pan"
+      }
+    ],
+    "created_at": "2023-12-02T19:30:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "hvac",
+    "description": "Thermostat screen blank and unresponsive, no climate control",
+    "guest_phone": "(415) 555-0135",
+    "urgency": "high",
+    "quotes": [
+      {
+        "vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+        "amount": 400,
+        "eta_days": 1,
+        "notes": "Replace thermostat, check wiring"
+      }
+    ],
+    "selected_vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2023-12-13T14:24:00Z",
+    "scheduled_at": "2023-12-15T12:24:00Z",
+    "resolved_at": "2023-12-15T16:10:12Z",
+    "timeline": [
+      {
+        "timestamp": "2023-12-12T09:24:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: thermostat screen blank and unresponsive, no climate control"
+      },
+      {
+        "timestamp": "2023-12-12T11:17:24Z",
+        "event": "vendor_contacted",
+        "details": "Called CoolBreeze HVAC for quote"
+      },
+      {
+        "timestamp": "2023-12-13T14:24:00Z",
+        "event": "approved",
+        "details": "Landlord approved $400 quote"
+      },
+      {
+        "timestamp": "2023-12-15T12:24:00Z",
+        "event": "vendor_arrived",
+        "details": "CoolBreeze HVAC technician on site"
+      },
+      {
+        "timestamp": "2023-12-15T16:10:12Z",
+        "event": "resolved",
+        "details": "Wiring reconnected, smart thermostat installed"
+      }
+    ],
+    "created_at": "2023-12-12T09:24:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "hvac",
+    "description": "AC unit rattling loudly and not cooling effectively",
+    "guest_phone": "(415) 555-0135",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+        "amount": 461,
+        "eta_days": 1,
+        "notes": "Tighten compressor mounts, recharge refrigerant"
+      }
+    ],
+    "selected_vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2023-12-17T14:16:00Z",
+    "scheduled_at": "2023-12-17T18:16:00Z",
+    "resolved_at": "2023-12-17T22:07:36Z",
+    "timeline": [
+      {
+        "timestamp": "2023-12-16T16:16:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: aC unit rattling loudly and not cooling effectively"
+      },
+      {
+        "timestamp": "2023-12-16T18:08:48Z",
+        "event": "vendor_contacted",
+        "details": "Called CoolBreeze HVAC for quote"
+      },
+      {
+        "timestamp": "2023-12-17T14:16:00Z",
+        "event": "approved",
+        "details": "Landlord approved $461 quote"
+      },
+      {
+        "timestamp": "2023-12-17T18:16:00Z",
+        "event": "vendor_arrived",
+        "details": "CoolBreeze HVAC technician on site"
+      },
+      {
+        "timestamp": "2023-12-17T22:07:36Z",
+        "event": "resolved",
+        "details": "Loose bolts tightened, refrigerant recharged to spec"
+      }
+    ],
+    "created_at": "2023-12-16T16:16:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "hvac",
+    "description": "AC blowing warm air, thermostat shows system is running",
+    "guest_phone": "(415) 555-0135",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+        "amount": 363,
+        "eta_days": 1,
+        "notes": "Check refrigerant, inspect evaporator coil"
+      }
+    ],
+    "selected_vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2023-12-28T22:43:00Z",
+    "scheduled_at": "2023-12-30T16:43:00Z",
+    "resolved_at": "2023-12-30T19:58:36Z",
+    "timeline": [
+      {
+        "timestamp": "2023-12-27T19:43:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: aC blowing warm air, thermostat shows system is running"
+      },
+      {
+        "timestamp": "2023-12-27T20:43:36Z",
+        "event": "vendor_contacted",
+        "details": "Called CoolBreeze HVAC for quote"
+      },
+      {
+        "timestamp": "2023-12-28T22:43:00Z",
+        "event": "approved",
+        "details": "Landlord approved $363 quote"
+      },
+      {
+        "timestamp": "2023-12-30T16:43:00Z",
+        "event": "vendor_arrived",
+        "details": "CoolBreeze HVAC technician on site"
+      },
+      {
+        "timestamp": "2023-12-30T19:58:36Z",
+        "event": "resolved",
+        "details": "Frozen evaporator coil thawed, clogged filter replaced"
+      }
+    ],
+    "created_at": "2023-12-27T19:43:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "appliance",
+    "description": "Refrigerator ice maker stopped producing ice",
+    "guest_phone": "(415) 555-0148",
+    "urgency": "low",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 228,
+        "eta_days": 2,
+        "notes": "Inspect water inlet valve and ice maker assembly"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2024-02-10T05:03:00Z",
+    "scheduled_at": "2024-02-12T02:03:00Z",
+    "resolved_at": "2024-02-12T04:09:00Z",
+    "timeline": [
+      {
+        "timestamp": "2024-02-08T17:03:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: refrigerator ice maker stopped producing ice"
+      },
+      {
+        "timestamp": "2024-02-08T17:42:36Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2024-02-10T05:03:00Z",
+        "event": "approved",
+        "details": "Landlord approved $228 quote"
+      },
+      {
+        "timestamp": "2024-02-12T02:03:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2024-02-12T04:09:00Z",
+        "event": "resolved",
+        "details": "Frozen water inlet valve thawed, filter replaced"
+      }
+    ],
+    "created_at": "2024-02-08T17:03:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "appliance",
+    "description": "Microwave not heating food, runs but no heat produced",
+    "guest_phone": "(415) 555-0152",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 277,
+        "eta_days": 1,
+        "notes": "Diagnose magnetron and capacitor"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2024-04-12T16:35:00Z",
+    "scheduled_at": "2024-04-14T05:35:00Z",
+    "resolved_at": "2024-04-14T08:20:00Z",
+    "timeline": [
+      {
+        "timestamp": "2024-04-11T07:35:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: microwave not heating food, runs but no heat produced"
+      },
+      {
+        "timestamp": "2024-04-11T08:36:48Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2024-04-12T16:35:00Z",
+        "event": "approved",
+        "details": "Landlord approved $277 quote"
+      },
+      {
+        "timestamp": "2024-04-14T05:35:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2024-04-14T08:20:00Z",
+        "event": "resolved",
+        "details": "Faulty magnetron replaced, microwave heating normally"
+      }
+    ],
+    "created_at": "2024-04-11T07:35:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "appliance",
+    "description": "Refrigerator not maintaining temperature, food spoiling",
+    "guest_phone": "(415) 555-0152",
+    "urgency": "high",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 474,
+        "eta_days": 1,
+        "notes": "Inspect compressor, clean condenser coils"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2024-05-12T20:48:00Z",
+    "scheduled_at": "2024-05-14T08:48:00Z",
+    "resolved_at": "2024-05-14T12:28:48Z",
+    "timeline": [
+      {
+        "timestamp": "2024-05-12T11:48:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: refrigerator not maintaining temperature, food spoiling"
+      },
+      {
+        "timestamp": "2024-05-12T12:18:00Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2024-05-12T20:48:00Z",
+        "event": "approved",
+        "details": "Landlord approved $474 quote"
+      },
+      {
+        "timestamp": "2024-05-14T08:48:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2024-05-14T12:28:48Z",
+        "event": "resolved",
+        "details": "Condenser coils cleaned, evaporator fan motor replaced"
+      }
+    ],
+    "created_at": "2024-05-12T11:48:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "appliance",
+    "description": "Dishwasher leaking from door seal during wash cycle",
+    "guest_phone": "(415) 555-0152",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 277,
+        "eta_days": 1,
+        "notes": "Replace door gasket"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2024-05-27T09:38:00Z",
+    "scheduled_at": "2024-05-28T02:38:00Z",
+    "resolved_at": "2024-05-28T05:26:36Z",
+    "timeline": [
+      {
+        "timestamp": "2024-05-26T12:38:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: dishwasher leaking from door seal during wash cycle"
+      },
+      {
+        "timestamp": "2024-05-26T12:56:36Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2024-05-27T09:38:00Z",
+        "event": "approved",
+        "details": "Landlord approved $277 quote"
+      },
+      {
+        "timestamp": "2024-05-28T02:38:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2024-05-28T05:26:36Z",
+        "event": "resolved",
+        "details": "New door gasket installed, latch adjusted"
+      }
+    ],
+    "created_at": "2024-05-26T12:38:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "appliance",
+    "description": "Washing machine shaking violently during spin cycle",
+    "guest_phone": "(415) 555-0152",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+        "amount": 363,
+        "eta_days": 1,
+        "notes": "Replace shock absorbers, rebalance drum"
+      }
+    ],
+    "selected_vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2024-10-23T01:22:00Z",
+    "scheduled_at": "2024-10-23T23:22:00Z",
+    "resolved_at": "2024-10-24T01:16:00Z",
+    "timeline": [
+      {
+        "timestamp": "2024-10-22T09:22:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: washing machine shaking violently during spin cycle"
+      },
+      {
+        "timestamp": "2024-10-22T10:52:00Z",
+        "event": "vendor_contacted",
+        "details": "Called CoolBreeze HVAC for quote"
+      },
+      {
+        "timestamp": "2024-10-23T01:22:00Z",
+        "event": "approved",
+        "details": "Landlord approved $363 quote"
+      },
+      {
+        "timestamp": "2024-10-23T23:22:00Z",
+        "event": "vendor_arrived",
+        "details": "CoolBreeze HVAC technician on site"
+      },
+      {
+        "timestamp": "2024-10-24T01:16:00Z",
+        "event": "resolved",
+        "details": "Shock absorbers replaced, machine leveled"
+      }
+    ],
+    "created_at": "2024-10-22T09:22:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "appliance",
+    "description": "Gas stove front burner not igniting, clicking but no flame",
+    "guest_phone": "(415) 555-0148",
+    "urgency": "low",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 166,
+        "eta_days": 2,
+        "notes": "Clean igniter port, realign electrode"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2024-12-07T21:11:00Z",
+    "scheduled_at": "2024-12-09T18:11:00Z",
+    "resolved_at": "2024-12-09T19:59:36Z",
+    "timeline": [
+      {
+        "timestamp": "2024-12-07T09:11:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: gas stove front burner not igniting, clicking but no flame"
+      },
+      {
+        "timestamp": "2024-12-07T10:04:24Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2024-12-07T21:11:00Z",
+        "event": "approved",
+        "details": "Landlord approved $166 quote"
+      },
+      {
+        "timestamp": "2024-12-09T18:11:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2024-12-09T19:59:36Z",
+        "event": "resolved",
+        "details": "Igniter port cleaned, electrode realigned"
+      }
+    ],
+    "created_at": "2024-12-07T09:11:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "appliance",
+    "description": "Dryer not producing heat, clothes still damp after cycle",
+    "guest_phone": "(415) 555-0152",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 338,
+        "eta_days": 1,
+        "notes": "Clear vent, replace heating element"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2024-12-10T23:04:00Z",
+    "scheduled_at": "2024-12-11T17:04:00Z",
+    "resolved_at": "2024-12-11T18:44:48Z",
+    "timeline": [
+      {
+        "timestamp": "2024-12-10T15:04:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: dryer not producing heat, clothes still damp after cycle"
+      },
+      {
+        "timestamp": "2024-12-10T16:16:36Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2024-12-10T23:04:00Z",
+        "event": "approved",
+        "details": "Landlord approved $338 quote"
+      },
+      {
+        "timestamp": "2024-12-11T17:04:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2024-12-11T18:44:48Z",
+        "event": "resolved",
+        "details": "Lint-clogged vent cleared, heating element replaced"
+      }
+    ],
+    "created_at": "2024-12-10T15:04:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "appliance",
+    "description": "Oven not reaching set temperature, undercooked food",
+    "guest_phone": "(415) 555-0152",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+        "amount": 301,
+        "eta_days": 2,
+        "notes": "Replace temperature sensor, recalibrate"
+      }
+    ],
+    "selected_vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2024-12-18T18:23:00Z",
+    "scheduled_at": "2024-12-19T18:23:00Z",
+    "resolved_at": "2024-12-19T21:16:24Z",
+    "timeline": [
+      {
+        "timestamp": "2024-12-17T16:23:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: oven not reaching set temperature, undercooked food"
+      },
+      {
+        "timestamp": "2024-12-17T17:04:24Z",
+        "event": "vendor_contacted",
+        "details": "Called Sparky's Electric for quote"
+      },
+      {
+        "timestamp": "2024-12-18T18:23:00Z",
+        "event": "approved",
+        "details": "Landlord approved $301 quote"
+      },
+      {
+        "timestamp": "2024-12-19T18:23:00Z",
+        "event": "vendor_arrived",
+        "details": "Sparky's Electric technician on site"
+      },
+      {
+        "timestamp": "2024-12-19T21:16:24Z",
+        "event": "resolved",
+        "details": "Faulty sensor replaced, oven calibrated to spec"
+      }
+    ],
+    "created_at": "2024-12-17T16:23:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "structural",
+    "description": "Bathroom caulking pulling away from tub, gap visible",
+    "guest_phone": "(415) 555-0199",
+    "urgency": "low",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 154,
+        "eta_days": 3,
+        "notes": "Remove old caulk, apply new silicone"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2025-01-18T14:06:00Z",
+    "scheduled_at": "2025-01-20T12:06:00Z",
+    "resolved_at": "2025-01-20T14:52:12Z",
+    "timeline": [
+      {
+        "timestamp": "2025-01-17T08:06:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: bathroom caulking pulling away from tub, gap visible"
+      },
+      {
+        "timestamp": "2025-01-17T09:27:36Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2025-01-18T14:06:00Z",
+        "event": "approved",
+        "details": "Landlord approved $154 quote"
+      },
+      {
+        "timestamp": "2025-01-20T12:06:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2025-01-20T14:52:12Z",
+        "event": "resolved",
+        "details": "Old caulk removed, new silicone caulk applied"
+      }
+    ],
+    "created_at": "2025-01-17T08:06:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "structural",
+    "description": "Water stain growing on bathroom ceiling, drywall feels soft",
+    "guest_phone": "(415) 555-0199",
+    "urgency": "high",
+    "quotes": [
+      {
+        "vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+        "amount": 523,
+        "eta_days": 1,
+        "notes": "Replace damaged drywall after leak fix"
+      }
+    ],
+    "selected_vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2025-04-30T09:54:00Z",
+    "scheduled_at": "2025-05-01T22:54:00Z",
+    "resolved_at": "2025-05-02T02:38:24Z",
+    "timeline": [
+      {
+        "timestamp": "2025-04-29T10:54:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: water stain growing on bathroom ceiling, drywall feels soft"
+      },
+      {
+        "timestamp": "2025-04-29T11:57:00Z",
+        "event": "vendor_contacted",
+        "details": "Called Sparky's Electric for quote"
+      },
+      {
+        "timestamp": "2025-04-30T09:54:00Z",
+        "event": "approved",
+        "details": "Landlord approved $523 quote"
+      },
+      {
+        "timestamp": "2025-05-01T22:54:00Z",
+        "event": "vendor_arrived",
+        "details": "Sparky's Electric technician on site"
+      },
+      {
+        "timestamp": "2025-05-02T02:38:24Z",
+        "event": "resolved",
+        "details": "Water-damaged drywall replaced, primed and painted"
+      }
+    ],
+    "created_at": "2025-04-29T10:54:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "structural",
+    "description": "Bedroom window stuck shut, frame appears warped",
+    "guest_phone": "(415) 555-0199",
+    "urgency": "low",
+    "quotes": [
+      {
+        "vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+        "amount": 240,
+        "eta_days": 3,
+        "notes": "Plane frame, apply weatherstripping"
+      }
+    ],
+    "selected_vendor_id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2025-05-01T08:08:00Z",
+    "scheduled_at": "2025-05-02T19:08:00Z",
+    "resolved_at": "2025-05-02T22:20:00Z",
+    "timeline": [
+      {
+        "timestamp": "2025-04-30T18:08:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: bedroom window stuck shut, frame appears warped"
+      },
+      {
+        "timestamp": "2025-04-30T19:47:00Z",
+        "event": "vendor_contacted",
+        "details": "Called Sparky's Electric for quote"
+      },
+      {
+        "timestamp": "2025-05-01T08:08:00Z",
+        "event": "approved",
+        "details": "Landlord approved $240 quote"
+      },
+      {
+        "timestamp": "2025-05-02T19:08:00Z",
+        "event": "vendor_arrived",
+        "details": "Sparky's Electric technician on site"
+      },
+      {
+        "timestamp": "2025-05-02T22:20:00Z",
+        "event": "resolved",
+        "details": "Frame sanded, weatherstripping applied, window operational"
+      }
+    ],
+    "created_at": "2025-04-30T18:08:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "appliance",
+    "description": "Washing machine error code on display, won't start any cycle",
+    "guest_phone": "(415) 555-0199",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+        "amount": 301,
+        "eta_days": 1,
+        "notes": "Reset board, check door lock assembly"
+      }
+    ],
+    "selected_vendor_id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2025-08-22T23:09:00Z",
+    "scheduled_at": "2025-08-24T11:09:00Z",
+    "resolved_at": "2025-08-24T13:38:24Z",
+    "timeline": [
+      {
+        "timestamp": "2025-08-22T14:09:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: washing machine error code on display, won't start any cycle"
+      },
+      {
+        "timestamp": "2025-08-22T15:05:24Z",
+        "event": "vendor_contacted",
+        "details": "Called CoolBreeze HVAC for quote"
+      },
+      {
+        "timestamp": "2025-08-22T23:09:00Z",
+        "event": "approved",
+        "details": "Landlord approved $301 quote"
+      },
+      {
+        "timestamp": "2025-08-24T11:09:00Z",
+        "event": "vendor_arrived",
+        "details": "CoolBreeze HVAC technician on site"
+      },
+      {
+        "timestamp": "2025-08-24T13:38:24Z",
+        "event": "resolved",
+        "details": "Control board reset, door lock assembly replaced"
+      }
+    ],
+    "created_at": "2025-08-22T14:09:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "structural",
+    "description": "Kitchen cabinet door hinge broken, door hanging at angle",
+    "guest_phone": "(415) 555-0199",
+    "urgency": "low",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 166,
+        "eta_days": 2,
+        "notes": "Replace concealed hinge, adjust alignment"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2025-09-15T09:07:00Z",
+    "scheduled_at": "2025-09-16T05:07:00Z",
+    "resolved_at": "2025-09-16T06:54:24Z",
+    "timeline": [
+      {
+        "timestamp": "2025-09-14T11:07:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: kitchen cabinet door hinge broken, door hanging at angle"
+      },
+      {
+        "timestamp": "2025-09-14T11:24:24Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2025-09-15T09:07:00Z",
+        "event": "approved",
+        "details": "Landlord approved $166 quote"
+      },
+      {
+        "timestamp": "2025-09-16T05:07:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2025-09-16T06:54:24Z",
+        "event": "resolved",
+        "details": "New hinge installed, cabinet door aligned"
+      }
+    ],
+    "created_at": "2025-09-14T11:07:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "structural",
+    "description": "Front door deadbolt not aligning with strike plate",
+    "guest_phone": "(415) 555-0199",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+        "amount": 215,
+        "eta_days": 2,
+        "notes": "Adjust hinges and reposition strike plate"
+      }
+    ],
+    "selected_vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2025-12-02T08:13:00Z",
+    "scheduled_at": "2025-12-02T18:13:00Z",
+    "resolved_at": "2025-12-02T21:10:36Z",
+    "timeline": [
+      {
+        "timestamp": "2025-12-01T17:13:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: front door deadbolt not aligning with strike plate"
+      },
+      {
+        "timestamp": "2025-12-01T18:49:36Z",
+        "event": "vendor_contacted",
+        "details": "Called Bay Area Premier Plumbing for quote"
+      },
+      {
+        "timestamp": "2025-12-02T08:13:00Z",
+        "event": "approved",
+        "details": "Landlord approved $215 quote"
+      },
+      {
+        "timestamp": "2025-12-02T18:13:00Z",
+        "event": "vendor_arrived",
+        "details": "Bay Area Premier Plumbing technician on site"
+      },
+      {
+        "timestamp": "2025-12-02T21:10:36Z",
+        "event": "resolved",
+        "details": "Hinge pins adjusted, strike plate repositioned"
+      }
+    ],
+    "created_at": "2025-12-01T17:13:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "structural",
+    "description": "Hairline crack in living room ceiling along wall joint",
+    "guest_phone": "(415) 555-0199",
+    "urgency": "low",
+    "quotes": [
+      {
+        "vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+        "amount": 277,
+        "eta_days": 3,
+        "notes": "Tape, mud, and texture match drywall crack"
+      }
+    ],
+    "selected_vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2025-12-25T19:18:00Z",
+    "scheduled_at": "2025-12-25T23:18:00Z",
+    "resolved_at": "2025-12-26T02:19:48Z",
+    "timeline": [
+      {
+        "timestamp": "2025-12-24T17:18:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: hairline crack in living room ceiling along wall joint"
+      },
+      {
+        "timestamp": "2025-12-24T19:10:48Z",
+        "event": "vendor_contacted",
+        "details": "Called Bay Area Premier Plumbing for quote"
+      },
+      {
+        "timestamp": "2025-12-25T19:18:00Z",
+        "event": "approved",
+        "details": "Landlord approved $277 quote"
+      },
+      {
+        "timestamp": "2025-12-25T23:18:00Z",
+        "event": "vendor_arrived",
+        "details": "Bay Area Premier Plumbing technician on site"
+      },
+      {
+        "timestamp": "2025-12-26T02:19:48Z",
+        "event": "resolved",
+        "details": "Crack taped, mudded, textured and painted"
+      }
+    ],
+    "created_at": "2025-12-24T17:18:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "structural",
+    "description": "Hallway handrail loose and wobbling, safety concern",
+    "guest_phone": "(415) 555-0199",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "amount": 240,
+        "eta_days": 2,
+        "notes": "Install heavy-duty anchors and new brackets"
+      }
+    ],
+    "selected_vendor_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2026-03-31T22:49:00Z",
+    "scheduled_at": "2026-04-01T18:49:00Z",
+    "resolved_at": "2026-04-01T20:45:24Z",
+    "timeline": [
+      {
+        "timestamp": "2026-03-31T14:49:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: hallway handrail loose and wobbling, safety concern"
+      },
+      {
+        "timestamp": "2026-03-31T15:32:48Z",
+        "event": "vendor_contacted",
+        "details": "Called Mike's Rapid Plumbing for quote"
+      },
+      {
+        "timestamp": "2026-03-31T22:49:00Z",
+        "event": "approved",
+        "details": "Landlord approved $240 quote"
+      },
+      {
+        "timestamp": "2026-04-01T18:49:00Z",
+        "event": "vendor_arrived",
+        "details": "Mike's Rapid Plumbing technician on site"
+      },
+      {
+        "timestamp": "2026-04-01T20:45:24Z",
+        "event": "resolved",
+        "details": "Lag bolts into studs, handrail secured firmly"
+      }
+    ],
+    "created_at": "2026-03-31T14:49:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "structural",
+    "description": "Living room window glass cracked, draft coming through",
+    "guest_phone": "(415) 555-0199",
+    "urgency": "medium",
+    "quotes": [
+      {
+        "vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+        "amount": 461,
+        "eta_days": 2,
+        "notes": "Replace glass pane, seal frame"
+      }
+    ],
+    "selected_vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2026-06-26T03:52:00Z",
+    "scheduled_at": "2026-06-27T12:52:00Z",
+    "resolved_at": "2026-06-27T15:19:00Z",
+    "timeline": [
+      {
+        "timestamp": "2026-06-24T20:52:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: living room window glass cracked, draft coming through"
+      },
+      {
+        "timestamp": "2026-06-24T21:16:00Z",
+        "event": "vendor_contacted",
+        "details": "Called Bay Area Premier Plumbing for quote"
+      },
+      {
+        "timestamp": "2026-06-26T03:52:00Z",
+        "event": "approved",
+        "details": "Landlord approved $461 quote"
+      },
+      {
+        "timestamp": "2026-06-27T12:52:00Z",
+        "event": "vendor_arrived",
+        "details": "Bay Area Premier Plumbing technician on site"
+      },
+      {
+        "timestamp": "2026-06-27T15:19:00Z",
+        "event": "resolved",
+        "details": "New insulated glass unit installed, frame sealed"
+      }
+    ],
+    "created_at": "2026-06-24T20:52:00Z"
+  },
+  {
+    "property_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "unit_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "status": "resolved",
+    "category": "structural",
+    "description": "Paint peeling on bathroom ceiling from moisture exposure",
+    "guest_phone": "(415) 555-0199",
+    "urgency": "low",
+    "quotes": [
+      {
+        "vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+        "amount": 338,
+        "eta_days": 3,
+        "notes": "Scrape, prime with moisture-resistant primer, repaint"
+      }
+    ],
+    "selected_vendor_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+    "approved_by": "Ben Shyong",
+    "approved_at": "2026-12-02T05:47:00Z",
+    "scheduled_at": "2026-12-02T10:47:00Z",
+    "resolved_at": "2026-12-02T13:15:12Z",
+    "timeline": [
+      {
+        "timestamp": "2026-12-01T15:47:00Z",
+        "event": "incident_created",
+        "details": "Guest reported: paint peeling on bathroom ceiling from moisture exposure"
+      },
+      {
+        "timestamp": "2026-12-01T17:39:12Z",
+        "event": "vendor_contacted",
+        "details": "Called Bay Area Premier Plumbing for quote"
+      },
+      {
+        "timestamp": "2026-12-02T05:47:00Z",
+        "event": "approved",
+        "details": "Landlord approved $338 quote"
+      },
+      {
+        "timestamp": "2026-12-02T10:47:00Z",
+        "event": "vendor_arrived",
+        "details": "Bay Area Premier Plumbing technician on site"
+      },
+      {
+        "timestamp": "2026-12-02T13:15:12Z",
+        "event": "resolved",
+        "details": "Ceiling scraped, primed and painted with semi-gloss"
+      }
+    ],
+    "created_at": "2026-12-01T15:47:00Z"
+  }
+]
