@@ -26,6 +26,7 @@ interface TranscriptLine {
 interface OwnerMessage {
   text: string;
   timestamp: string;
+  role?: "user" | "agent";
 }
 
 interface InvoiceAttachment {
@@ -235,11 +236,17 @@ function TranscriptBubble({ line }: { line: TranscriptLine }) {
 }
 
 function OwnerMessageBubble({ message }: { message: OwnerMessage }) {
+  const isAgent = message.role === "agent";
   return (
-    <div className="flex gap-2 animate-slide-in">
-      <div className="max-w-[80%] rounded-xl px-3 py-2 text-xs leading-relaxed bg-purple-500/10 border border-purple-500/20 text-[var(--text)] rounded-tl-sm">
-        <span className="text-[10px] font-semibold block mb-0.5 text-purple-400">
-          Landlord (You)
+    <div className={cn("flex gap-2 animate-slide-in", isAgent && "justify-end")}>
+      <div className={cn(
+        "max-w-[80%] rounded-xl px-3 py-2 text-xs leading-relaxed",
+        isAgent
+          ? "bg-blue-500/10 border border-blue-500/20 text-[var(--text)] rounded-tr-sm"
+          : "bg-purple-500/10 border border-purple-500/20 text-[var(--text)] rounded-tl-sm"
+      )}>
+        <span className={cn("text-[10px] font-semibold block mb-0.5", isAgent ? "text-blue-400" : "text-purple-400")}>
+          {isAgent ? "Agent" : "Landlord (You)"}
         </span>
         {message.text}
       </div>
@@ -382,7 +389,7 @@ export function CallTranscript({
   const handleSend = async () => {
     const text = ownerInput.trim();
     if (!text) return;
-    setOwnerMessages((prev) => [...prev, { text, timestamp: new Date().toISOString() }]);
+    setOwnerMessages((prev) => [...prev, { text, timestamp: new Date().toISOString(), role: "user" }]);
     setOwnerInput("");
     setLiveLoading(true);
     try {
@@ -393,10 +400,10 @@ export function CallTranscript({
       });
       const data = await res.json();
       if (data.reply) {
-        setOwnerMessages((prev) => [...prev, { text: `Agent: ${data.reply}`, timestamp: new Date().toISOString() }]);
+        setOwnerMessages((prev) => [...prev, { text: data.reply, timestamp: new Date().toISOString(), role: "agent" }]);
       }
     } catch {
-      setOwnerMessages((prev) => [...prev, { text: "Agent: Sorry, I couldn't connect to the database.", timestamp: new Date().toISOString() }]);
+      setOwnerMessages((prev) => [...prev, { text: "Sorry, I couldn't connect to the database.", timestamp: new Date().toISOString(), role: "agent" }]);
     } finally {
       setLiveLoading(false);
     }
