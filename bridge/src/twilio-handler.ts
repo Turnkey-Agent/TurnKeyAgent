@@ -131,6 +131,15 @@ export function handleMediaStream(ws: WS): void {
             }
           });
 
+          // Rewire the text handler to capture transcripts
+          geminiSession.setTextHandler((text: string) => {
+            if (text.trim()) {
+              console.log(`[Agent] ${text.slice(0, 120)}`);
+              transcriptParts.push(text);
+              flushTranscript();
+            }
+          });
+
           console.log(`[WS] Using PRE-WARMED Gemini session (zero latency)`);
 
           // Kick Gemini into speaking immediately via text trigger
@@ -177,7 +186,10 @@ export function handleMediaStream(ws: WS): void {
 
       case "media":
         if (geminiSession && msg.media?.payload) {
-          geminiSession.sendAudio(twilioToGemini(msg.media.payload));
+          const pcmData = twilioToGemini(msg.media.payload);
+          if (pcmData.length > 0) {
+            geminiSession.sendAudio(pcmData);
+          }
         }
         break;
 

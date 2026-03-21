@@ -20,7 +20,7 @@ function getEventIcon(event: TimelineEvent) {
   if (text.includes("call") || text.includes("calling")) return <Mic size={12} className="text-orange-400" />;
   if (text.includes("search") || text.includes("found")) return <Search size={12} className="text-blue-400" />;
   if (text.includes("analyz") || text.includes("recommend")) return <Brain size={12} className="text-purple-400" />;
-  return <Activity size={12} className="text-[#6b7280]" />;
+  return <Activity size={12} className="text-[var(--text-muted)]" />;
 }
 
 function TimelineRow({ event, isLast }: { event: TimelineEvent; isLast: boolean }) {
@@ -28,24 +28,24 @@ function TimelineRow({ event, isLast }: { event: TimelineEvent; isLast: boolean 
     <div className="flex gap-3 animate-slide-in">
       {/* Timeline line + dot */}
       <div className="flex flex-col items-center flex-shrink-0">
-        <div className="w-6 h-6 rounded-full bg-[#1a1a24] border border-[#2a2a3a] flex items-center justify-center flex-shrink-0">
+        <div className="w-6 h-6 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center flex-shrink-0">
           {getEventIcon(event)}
         </div>
-        {!isLast && <div className="w-px flex-1 bg-[#2a2a3a] my-1" />}
+        {!isLast && <div className="w-px flex-1 bg-[var(--border)] my-1" />}
       </div>
 
       {/* Content */}
       <div className={cn("pb-3 min-w-0", isLast && "pb-0")}>
         <div className="flex items-baseline gap-2">
-          <span className="text-[11px] text-[#e8e8f0] font-medium leading-tight">
+          <span className="text-[11px] text-[var(--text)] font-medium leading-tight">
             {event.event}
           </span>
-          <span className="text-[9px] text-[#6b7280] font-mono flex-shrink-0">
+          <span className="text-[9px] text-[var(--text-muted)] font-mono flex-shrink-0">
             {formatTime(event.timestamp)}
           </span>
         </div>
         {event.details && (
-          <p className="text-[10px] text-[#6b7280] mt-0.5 leading-relaxed">
+          <p className="text-[10px] text-[var(--text-muted)] mt-0.5 leading-relaxed">
             {event.details}
           </p>
         )}
@@ -63,14 +63,14 @@ export function EventTimeline({ events }: EventTimelineProps) {
   }, [events.length]);
 
   return (
-    <div className="rounded-xl border border-[#2a2a3a] bg-[#111118] p-4 flex flex-col gap-3">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 flex flex-col gap-3">
       {/* Header */}
       <div className="flex items-center gap-2">
-        <Clock size={14} className="text-[#6b7280]" />
-        <span className="text-xs font-semibold text-[#e8e8f0] uppercase tracking-wider">
+        <Clock size={14} className="text-[var(--text-muted)]" />
+        <span className="text-xs font-semibold text-[var(--text)] uppercase tracking-wider">
           Timeline
         </span>
-        <span className="ml-auto text-[10px] text-[#6b7280] font-mono">
+        <span className="ml-auto text-[10px] text-[var(--text-muted)] font-mono">
           {events.length} events
         </span>
       </div>
@@ -78,7 +78,7 @@ export function EventTimeline({ events }: EventTimelineProps) {
       {/* Events */}
       <div className="flex flex-col max-h-72 overflow-y-auto pr-1">
         {events.length === 0 ? (
-          <p className="text-[11px] text-[#6b7280] text-center py-6">
+          <p className="text-[11px] text-[var(--text-muted)] text-center py-6">
             Waiting for agent actions...
           </p>
         ) : (

@@ -21,6 +21,8 @@ export class GeminiLiveSession {
   private retryCount = 0;
   private maxRetries = 2;
   private closed = false;
+  private audioChunksSent = 0;
+  private audioChunksReceived = 0;
 
   constructor(options: GeminiSessionOptions) {
     this.options = options;
@@ -32,19 +34,22 @@ export class GeminiLiveSession {
         model: config.geminiLiveModel,
         config: {
           systemInstruction: this.options.systemPrompt,
-          responseModalities: ["AUDIO"],
+          responseModalities: ["AUDIO", "TEXT"],
           speechConfig: {
             voiceConfig: {
               prebuiltVoiceConfig: { voiceName: "Aoede" },
             },
           },
           tools: [{ functionDeclarations: toolDeclarations }],
-          // Reduce pauses: aggressive VAD so Gemini responds faster
+          // Enable transcription so Gemini processes caller audio as conversation
+          inputAudioTranscription: {},
+          outputAudioTranscription: {},
+          // VAD: balanced settings for phone conversation
           realtimeInputConfig: {
             automaticActivityDetection: {
               disabled: false,
-              prefixPaddingMs: 20,
-              silenceDurationMs: 300,
+              prefixPaddingMs: 100,
+              silenceDurationMs: 500,
             },
           },
         },
@@ -78,11 +83,15 @@ export class GeminiLiveSession {
   }
 
   private async handleMessage(msg: LiveServerMessage): Promise<void> {
+    // Handle audio/text output from Gemini
     const parts = msg.serverContent?.modelTurn?.parts;
     if (parts) {
       for (const part of parts) {
         if (part.inlineData?.data) {
-          console.log(`[Audio] Gemini → ${part.inlineData.data.length} b64 chars, mime: ${part.inlineData.mimeType || "unset"}`);
+          this.audioChunksReceived++;
+          if (this.audioChunksReceived <= 3 || this.audioChunksReceived % 50 === 0) {
+            console.log(`[Audio] Gemini -> caller: chunk #${this.audioChunksReceived}, ${part.inlineData.data.length} b64 chars`);
+          }
           this.options.onAudio(part.inlineData.data);
         }
         if (part.text) {
@@ -90,13 +99,31 @@ export class GeminiLiveSession {
         }
       }
     } else if (msg.serverContent) {
-      // Log what we're getting if no modelTurn parts
+      // Log input transcription (what Gemini heard from the caller)
+      const sc = msg.serverContent as Record<string, unknown>;
+      if (sc.inputTranscription) {
+        const transcript = sc.inputTranscription as Record<string, string>;
+        if (transcript.text) {
+          console.log(`[Caller said] "${transcript.text}"`);
+          this.options.onText?.(`[Caller] ${transcript.text}`);
+        }
+      }
+      if (sc.outputTranscription) {
+        const transcript = sc.outputTranscription as Record<string, string>;
+        if (transcript.text) {
+          console.log(`[Agent said] "${transcript.text}"`);
+        }
+      }
+      // Log other unexpected content types for debugging
       const keys = Object.keys(msg.serverContent);
-      if (keys.length > 0 && !msg.serverContent.turnComplete) {
+      const knownKeys = ["modelTurn", "turnComplete", "interrupted", "inputTranscription", "outputTranscription"];
+      const unknownKeys = keys.filter(k => !knownKeys.includes(k));
+      if (unknownKeys.length > 0) {
         console.log(`[Gemini] serverContent keys: ${keys.join(", ")}`);
       }
     }
 
+    // Handle tool calls
     const toolCall = msg.toolCall;
     if (toolCall?.functionCalls) {
       const responses = await Promise.all(
@@ -122,6 +149,11 @@ export class GeminiLiveSession {
     this.options.onAudio = handler;
   }
 
+  /** Rewire text output — used by pre-warming to attach transcript capture */
+  setTextHandler(handler: (text: string) => void): void {
+    this.options.onText = handler;
+  }
+
   /** Send a text message to Gemini to trigger a response (used to kick off speech) */
   sendText(text: string): void {
     if (!this.session) return;
@@ -130,8 +162,12 @@ export class GeminiLiveSession {
 
   sendAudio(base64Pcm: string): void {
     if (!this.session) return;
+    this.audioChunksSent++;
+    if (this.audioChunksSent <= 5 || this.audioChunksSent % 100 === 0) {
+      console.log(`[Audio] Caller -> Gemini: chunk #${this.audioChunksSent}, ${base64Pcm.length} b64 chars`);
+    }
     this.session.sendRealtimeInput({
-      audio: { data: base64Pcm, mimeType: "audio/pcm;rate=8000" },
+      media: { data: base64Pcm, mimeType: "audio/pcm;rate=8000" },
     });
   }
 
@@ -147,64 +183,83 @@ export class GeminiLiveSession {
 // ──────────────────────────────────────────────────────────────
 // SYSTEM PROMPTS — 742 Evergreen Terrace (matches seed data)
 // ──────────────────────────────────────────────────────────────
-const VOICE_RULES = `CRITICAL RULES:
+const VOICE_RULES = `CONVERSATION RULES:
 - Start speaking IMMEDIATELY when connected. Do NOT wait for "hello."
-- Max 2 sentences per turn. This is a fast phone call.
-- NEVER go silent. If thinking, say "One moment..." or "Let me pull that up..." or "Bear with me..."
-- Be warm but fast. No filler greetings.`;
+- Keep each response to 1-2 sentences. This is a quick phone call.
+- LISTEN to what the other person says and respond to it. This is a real-time conversation, not a recording.
+- If you need a moment, say "One moment..." or "Let me check on that..."
+- Be warm, professional, and concise.
+- Adapt your responses based on what the caller says — do NOT follow a fixed script.
+- If the other person asks a question, answer it before moving on.
+- If they seem confused, clarify. If they interrupt, let them speak and respond to what they said.`;
 
 export const SYSTEM_PROMPTS = {
   guestOutbound: (situation: string) =>
-    `You are Turnkey Agent, AI property manager for Lemon Property at 742 Evergreen Terrace, San Francisco. You are calling a guest who reported an issue.
+    `You are Turnkey Agent, an AI property manager for Lemon Property at 742 Evergreen Terrace, San Francisco. You are calling a guest who reported a maintenance issue.
 
 Reported situation: ${situation}
 
-YOUR SCRIPT (under 60 seconds total):
-1. IMMEDIATELY say: "Hi, this is Turnkey Agent calling from Lemon Property. I'm calling about the issue you reported."
-2. Confirm: "Can you tell me — is the water still actively flowing?" (or appropriate question)
-3. After they respond, reassure: "Got it. I'm dispatching vendors right now. I'll call you back once a vendor is confirmed with an ETA."
-4. End: "Hang tight, we're on it." Then stop talking.
+YOUR GOALS for this call (in order of priority):
+1. Introduce yourself briefly and reference the issue they reported.
+2. Confirm the current status — ask if the problem is still active (e.g., "Is water still flowing?" for plumbing).
+3. Listen to their answer and ask any follow-up questions based on what they say.
+4. Reassure them that you are dispatching vendors and will call back with an ETA.
+5. Wrap up the call politely.
+
+IMPORTANT: This is a two-way conversation. The guest may have questions, provide additional details, or express concern. Listen and respond naturally. Do not recite a script.
 
 ${VOICE_RULES}`,
 
   vendorOutbound: (situation: string) =>
-    `You are Turnkey Agent calling a plumbing vendor about an emergency job.
+    `You are Turnkey Agent, an AI property management service. You are calling a plumbing vendor about an emergency repair job.
 
-Issue: ${situation}
+Issue details: ${situation}
+Property: 742 Evergreen Terrace, Unit 3B, San Francisco
 
-YOUR SCRIPT (under 45 seconds):
-1. IMMEDIATELY: "Hi, this is Turnkey Agent. I have an emergency plumbing job at 742 Evergreen Terrace, Unit 3B. Burst pipe under the bathroom sink, actively flooding."
-2. Ask: "Can you give me a quote and your earliest availability?"
-3. After they quote: "Got it — I'll confirm with the property owner and call you right back."
-4. End the call.
+YOUR GOALS for this call:
+1. Introduce yourself and describe the emergency job.
+2. Ask for a price quote and earliest availability.
+3. Listen to their response — they may ask questions about the job, access, location, or scope. Answer what you can.
+4. Once you have a quote and timeframe, confirm you'll check with the property owner and call back.
+
+IMPORTANT: The vendor will likely ask questions. Answer them naturally:
+- Location: 742 Evergreen Terrace, Unit 3B, second floor, under the bathroom sink
+- Access: You can provide an access code once confirmed
+- Scope: Based on the reported issue description above
+- If you don't know something, say so honestly.
 
 ${VOICE_RULES}`,
 
   landlordOutbound: (situation: string, quotes: string) =>
-    `You are Turnkey Agent calling Ben, the property owner, about an emergency at Lemon Property, 742 Evergreen Terrace.
+    `You are Turnkey Agent, an AI property management service. You are calling Ben, the property owner of Lemon Property at 742 Evergreen Terrace.
 
 Issue: ${situation}
-Vendor quotes: ${quotes}
+Vendor quotes collected: ${quotes}
 
-YOUR SCRIPT (under 45 seconds):
-1. IMMEDIATELY: "Hi Ben, Turnkey Agent here. We have an emergency at Lemon Property — burst pipe, bathroom flooding in Unit 3B."
-2. Present: "I got two vendor quotes." Then read each quote.
-3. Recommend: "I recommend the more cost-effective option based on price and availability."
-4. Ask: "Should I go ahead and schedule them?"
-5. After approval: "Done. I'll confirm with the vendor and update the guest."
+YOUR GOALS for this call:
+1. Briefly explain the emergency situation.
+2. Present the vendor quotes you collected.
+3. Give your recommendation (usually the best value considering price and availability).
+4. Ask if Ben wants to approve and schedule the repair.
+5. Listen to his decision and any questions he has.
+
+IMPORTANT: Ben may ask about the damage severity, insurance, costs, or other options. Answer based on what you know. If he wants to discuss or pushes back, engage naturally. Do not just recite quotes — have a conversation about them.
 
 ${VOICE_RULES}`,
 
   vendorSchedule: (situation: string) =>
-    `You are Turnkey Agent calling a vendor back to confirm and schedule a repair.
+    `You are Turnkey Agent, an AI property management service. You are calling a vendor back to confirm and schedule a repair that the property owner has approved.
 
 Issue: ${situation}
+Property: 742 Evergreen Terrace, Unit 3B, San Francisco
 
-YOUR SCRIPT (under 30 seconds):
-1. IMMEDIATELY: "Hi, this is Turnkey Agent again. The property owner approved your quote for 742 Evergreen Terrace."
-2. Schedule: "Can we confirm you for tomorrow morning?"
-3. After confirmation: "Perfect. The vendor access code is 4729. Unit 3B, second floor, under the bathroom sink."
-4. End: "Thanks, we'll see you then."
+YOUR GOALS for this call:
+1. Let them know the property owner approved their quote.
+2. Coordinate a time — suggest tomorrow morning if possible.
+3. Provide the access details: vendor access code 4729, Unit 3B, second floor, under the bathroom sink.
+4. Confirm the appointment and wrap up.
+
+IMPORTANT: The vendor may suggest a different time, ask about parking, access, or other logistics. Be flexible and answer their questions naturally.
 
 ${VOICE_RULES}`,
 };

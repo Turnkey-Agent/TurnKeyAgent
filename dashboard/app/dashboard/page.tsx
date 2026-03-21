@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useIncidentRealtime } from "@/hooks/useIncidentRealtime";
 import { ActiveCallsPanel } from "@/components/dashboard/ActiveCallsPanel";
@@ -16,16 +16,16 @@ const BRIDGE_URL = process.env.NEXT_PUBLIC_BRIDGE_URL || "http://localhost:3456"
 
 // ─── Pre-configured issues matching the 10 generated videos ─────────────────
 const PRESET_ISSUES = [
-  { id: "toilet", icon: "🚽", title: "Toilet Overflow", subtitle: "Bathroom flooding, water on floor", urgency: "Emergency", category: "plumbing", description: "Toilet is overflowing in the bathroom. Water is flooding onto the tile floor and spreading. Guest reports water EVERYWHERE." },
-  { id: "flush", icon: "🔧", title: "Broken Flush Handle", subtitle: "Flush handle snapped, can't flush", urgency: "High", category: "plumbing", description: "The toilet flush handle is broken and won't work. Guest has been trying to fix it but the handle just spins. Can't flush at all." },
-  { id: "sink", icon: "🍜", title: "Clogged Kitchen Sink", subtitle: "Sink overflowing with standing water", urgency: "High", category: "plumbing", description: "Kitchen sink is completely clogged and overflowing. Standing water rising with dirty dishes piled up. Water about to spill onto the floor." },
-  { id: "disposal", icon: "⚙️", title: "Garbage Disposal Grinding", subtitle: "Terrible grinding noise, won't drain", urgency: "Medium", category: "appliance", description: "Garbage disposal is making a terrible grinding noise. Something is stuck in it. Kitchen sink won't drain and there's a burning smell." },
-  { id: "ac", icon: "🥵", title: "AC Broken During Heatwave", subtitle: "No cooling, 95°F inside", urgency: "Emergency", category: "hvac", description: "AC completely stopped working during a heatwave. It's 95 degrees outside and the unit is just humming but not cooling. Guest is sweating profusely." },
-  { id: "pipe", icon: "💧", title: "Pipe Leak Under Sink", subtitle: "PVC joint dripping, bucket overflowing", urgency: "Emergency", category: "plumbing", description: "Water is leaking from the PVC pipe joint under the bathroom sink. The bucket underneath is overflowing. This is the same pipe that was fixed in October 2024." },
-  { id: "electrical", icon: "⚡", title: "Electrical Sparks", subtitle: "Power strip sparking, monitors flickering", urgency: "Emergency", category: "electrical", description: "The power strip with all the laptop chargers just sparked. All the monitors in the room flickered. There's a burning plastic smell." },
-  { id: "smoke", icon: "🔔", title: "Smoke Detector Beeping", subtitle: "3am beeping, can't reach it", urgency: "Medium", category: "electrical", description: "Smoke detector has been beeping every 30 seconds since 3am. Battery is dead. Guest can't reach it even standing on a chair." },
-  { id: "door", icon: "🚪", title: "Door Lock Jammed", subtitle: "Can't open front door, key stuck", urgency: "High", category: "structural", description: "Front door lock is completely jammed. The key goes in but won't turn. Guest is locked inside and has a pizza delivery waiting outside." },
-  { id: "ceiling", icon: "💦", title: "Ceiling Leak", subtitle: "Water dripping onto desk and electronics", urgency: "Emergency", category: "structural", description: "Water is dripping from a brown stain on the ceiling directly onto the desk with monitors and keyboards. Guest is frantically moving laptops." },
+  { id: "toilet", icon: "🚽", title: "Toilet Overflow", subtitle: "Bathroom flooding, water on floor", urgency: "Emergency", category: "plumbing", video: "/videos/toilet_overflow.mp4", description: "Toilet is overflowing in the bathroom. Water is flooding onto the tile floor and spreading. Guest reports water EVERYWHERE." },
+  { id: "flush", icon: "🔧", title: "Broken Flush Handle", subtitle: "Flush handle snapped, can't flush", urgency: "High", category: "plumbing", video: "/videos/broken_flush.mp4", description: "The toilet flush handle is broken and won't work. Guest has been trying to fix it but the handle just spins. Can't flush at all." },
+  { id: "sink", icon: "🍜", title: "Clogged Kitchen Sink", subtitle: "Sink overflowing with standing water", urgency: "High", category: "plumbing", video: "/videos/clogged_sink.mp4", description: "Kitchen sink is completely clogged and overflowing. Standing water rising with dirty dishes piled up. Water about to spill onto the floor." },
+  { id: "disposal", icon: "⚙️", title: "Garbage Disposal Grinding", subtitle: "Terrible grinding noise, won't drain", urgency: "Medium", category: "appliance", video: "/videos/garbage_disposal_grinding.mp4", description: "Garbage disposal is making a terrible grinding noise. Something is stuck in it. Kitchen sink won't drain and there's a burning smell." },
+  { id: "ac", icon: "🥵", title: "AC Broken During Heatwave", subtitle: "No cooling, 95°F inside", urgency: "Emergency", category: "hvac", video: "/videos/ac_broken_heatwave.mp4", description: "AC completely stopped working during a heatwave. It's 95 degrees outside and the unit is just humming but not cooling. Guest is sweating profusely." },
+  { id: "pipe", icon: "💧", title: "Pipe Leak Under Sink", subtitle: "PVC joint dripping, bucket overflowing", urgency: "Emergency", category: "plumbing", video: "/videos/pipe_leak_under_sink.mp4", description: "Water is leaking from the PVC pipe joint under the bathroom sink. The bucket underneath is overflowing. This is the same pipe that was fixed in October 2024." },
+  { id: "electrical", icon: "⚡", title: "Electrical Sparks", subtitle: "Power strip sparking, monitors flickering", urgency: "Emergency", category: "electrical", video: "/videos/electrical_sparks.mp4", description: "The power strip with all the laptop chargers just sparked. All the monitors in the room flickered. There's a burning plastic smell." },
+  { id: "smoke", icon: "🔔", title: "Smoke Detector Beeping", subtitle: "3am beeping, can't reach it", urgency: "Medium", category: "electrical", video: "/videos/smoke_detector_beeping.mp4", description: "Smoke detector has been beeping every 30 seconds since 3am. Battery is dead. Guest can't reach it even standing on a chair." },
+  { id: "door", icon: "🚪", title: "Door Lock Jammed", subtitle: "Can't open front door, key stuck", urgency: "High", category: "structural", video: "/videos/door_lock_jammed.mp4", description: "Front door lock is completely jammed. The key goes in but won't turn. Guest is locked inside and has a pizza delivery waiting outside." },
+  { id: "ceiling", icon: "💦", title: "Ceiling Leak", subtitle: "Water dripping onto desk and electronics", urgency: "Emergency", category: "structural", video: "/videos/ceiling_leak.mp4", description: "Water is dripping from a brown stain on the ceiling directly onto the desk with monitors and keyboards. Guest is frantically moving laptops." },
 ];
 
 // ─── Hardcoded for demo: the latest open incident ─────────────────────────────
@@ -43,6 +43,39 @@ export default function DashboardPage() {
   const isDragging = useRef(false);
   const dragStartX = useRef(0);
   const dragStartWidth = useRef(0);
+
+  // Property data from Supabase
+  const [propertyName, setPropertyName] = useState("Loading...");
+  const [propertyAddress, setPropertyAddress] = useState("");
+  const [unitNumber, setUnitNumber] = useState("");
+  const [unitStatus, setUnitStatus] = useState("");
+
+  useEffect(() => {
+    const supabase = createClient();
+    (async () => {
+      // Fetch first property
+      const { data: prop } = await supabase
+        .from("properties")
+        .select("id, name, address")
+        .limit(1)
+        .single();
+      if (prop) {
+        setPropertyName(prop.name);
+        setPropertyAddress(prop.address);
+        // Fetch first unit for this property
+        const { data: unit } = await supabase
+          .from("units")
+          .select("unit_number, status")
+          .eq("property_id", prop.id)
+          .limit(1)
+          .single();
+        if (unit) {
+          setUnitNumber(unit.unit_number);
+          setUnitStatus(unit.status);
+        }
+      }
+    })();
+  }, []);
 
   // Workflow trigger form
   const [situation, setSituation] = useState("");
@@ -183,15 +216,15 @@ export default function DashboardPage() {
               Property
             </span>
             <div className="text-[11px] text-[var(--text-muted)] space-y-1">
-              <p className="text-[var(--text)] font-medium">742 Evergreen Terrace</p>
-              <p>Unit 3B · Occupied</p>
+              <p className="text-[var(--text)] font-medium">{propertyAddress || propertyName}</p>
+              {unitNumber && <p>Unit {unitNumber} · {unitStatus || "Occupied"}</p>}
               <p className="text-blue-400">
                 {incident?.related_maintenance_ids?.length ?? 0} similar past issues
               </p>
             </div>
             <div className="pt-1 border-t border-[var(--border-subtle)]">
               <p className="text-[10px] text-[var(--text-muted)]">Vendor code</p>
-              <p className="text-xs font-mono text-[var(--text)] tracking-widest">••••</p>
+              <p className="text-xs font-mono text-[var(--text)] tracking-widest">----</p>
             </div>
           </div>
 
@@ -221,8 +254,19 @@ export default function DashboardPage() {
                     disabled={deploying}
                     className="flex items-center gap-3 p-3 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:border-blue-500/50 hover:bg-[var(--surface-2)] text-left transition-all disabled:opacity-50 group"
                   >
-                    <span className="text-xl flex-shrink-0">{issue.icon}</span>
-                    <div className="min-w-0">
+                    {/* Video thumbnail */}
+                    <div className="w-14 h-10 rounded overflow-hidden flex-shrink-0 bg-[var(--surface-2)] relative">
+                      <video
+                        src={issue.video}
+                        muted
+                        playsInline
+                        preload="metadata"
+                        className="w-full h-full object-cover"
+                        onMouseEnter={(e) => (e.target as HTMLVideoElement).play().catch(() => {})}
+                        onMouseLeave={(e) => { const v = e.target as HTMLVideoElement; v.pause(); v.currentTime = 0; }}
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-[var(--text)] truncate">{issue.title}</p>
                       <p className="text-[10px] text-[var(--text-muted)] truncate">{issue.subtitle}</p>
                     </div>
@@ -257,8 +301,8 @@ export default function DashboardPage() {
           {incident && (
             <IncidentCard
               incident={incident}
-              unitNumber="3B"
-              propertyName="Lemon Property"
+              unitNumber={unitNumber || "—"}
+              propertyName={propertyName}
             />
           )}
 

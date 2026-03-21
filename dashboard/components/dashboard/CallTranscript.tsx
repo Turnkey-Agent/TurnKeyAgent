@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { MessageSquare, Send, Plus, X, FileText, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 import type { CallLog, ParticipantType } from "@/lib/types";
 import type { Quote } from "@/lib/types";
 import { QuoteComparison } from "@/components/dashboard/QuoteComparison";
@@ -50,56 +51,136 @@ interface ConversationTab {
   label: string;
 }
 
-// ─── Mock agent response logic ─────────────────────────────────────────────────
+// ─── Supabase-backed agent reply ────────────────────────────────────────────
 
-const MOCK_INVOICES: InvoiceAttachment[] = [
-  {
-    type: "invoice",
-    vendor: "Mike's Plumbing",
-    date: "2025-10-14",
-    amount: 285,
-    description: "PVC joint repair under bathroom sink — Unit 3B",
-    invoiceId: "INV-2025-1014",
-    imageUrl: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80",
-  },
-  {
-    type: "invoice",
-    vendor: "Mike's Plumbing",
-    date: "2025-07-03",
-    amount: 140,
-    description: "Slow drain clearing — Unit 3B bathroom",
-    invoiceId: "INV-2025-0703",
-    imageUrl: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80",
-  },
-];
-
-function getMockAgentReply(userText: string): { text: string; attachments?: InvoiceAttachment[] } {
+async function getAgentReply(
+  userText: string
+): Promise<{ text: string; attachments?: InvoiceAttachment[] }> {
+  const supabase = createClient();
   const lower = userText.toLowerCase();
 
-  if (/(plumb|plumber|pipe|drain|leak|sink|water)/i.test(lower)) {
-    const last = MOCK_INVOICES[0];
+  try {
+    // Invoice / cost / billing queries
+    if (/(invoice|receipt|bill|payment|cost|price|charge)/i.test(lower)) {
+      const { data: invoices } = await supabase
+        .from("invoices")
+        .select("invoice_number, amount, total, issued_at, notes, photo_url, vendors(name)")
+        .order("issued_at", { ascending: false })
+        .limit(5);
+
+      if (invoices && invoices.length > 0) {
+        const attachments: InvoiceAttachment[] = invoices.map((inv: any) => ({
+          type: "invoice" as const,
+          vendor: inv.vendors?.name ?? "Unknown",
+          date: new Date(inv.issued_at).toLocaleDateString("en-US"),
+          amount: Number(inv.total ?? inv.amount),
+          description: inv.notes ?? "",
+          imageUrl: inv.photo_url ?? undefined,
+          invoiceId: inv.invoice_number,
+        }));
+        return {
+          text: `I found **${invoices.length}** invoices on this property. Showing the most recent:`,
+          attachments,
+        };
+      }
+      return { text: "No invoices found in the database for this property." };
+    }
+
+    // Plumbing / maintenance queries
+    if (/(plumb|plumber|pipe|drain|leak|sink|water)/i.test(lower)) {
+      const { data: logs } = await supabase
+        .from("maintenance_logs")
+        .select("id, description, resolution, vendor_name, cost, reported_at")
+        .ilike("category", "%plumbing%")
+        .order("reported_at", { ascending: false })
+        .limit(3);
+
+      if (logs && logs.length > 0) {
+        const latest = logs[0];
+        // Try to find matching invoices
+        const { data: invoices } = await supabase
+          .from("invoices")
+          .select("invoice_number, amount, total, issued_at, notes, photo_url, vendors(name)")
+          .eq("maintenance_log_id", latest.id)
+          .limit(1);
+
+        const attachments: InvoiceAttachment[] = (invoices ?? []).map((inv: any) => ({
+          type: "invoice" as const,
+          vendor: inv.vendors?.name ?? latest.vendor_name ?? "Unknown",
+          date: new Date(inv.issued_at).toLocaleDateString("en-US"),
+          amount: Number(inv.total ?? inv.amount),
+          description: inv.notes ?? latest.description,
+          imageUrl: inv.photo_url ?? undefined,
+          invoiceId: inv.invoice_number,
+        }));
+
+        return {
+          text: `Your most recent plumbing service was on **${new Date(latest.reported_at).toLocaleDateString("en-US")}** by **${latest.vendor_name ?? "Unknown"}**. ${latest.resolution ? `Resolution: ${latest.resolution}` : ""}`,
+          attachments: attachments.length > 0 ? attachments : undefined,
+        };
+      }
+      return { text: "No plumbing maintenance records found in the database." };
+    }
+
+    // Schedule / appointment queries
+    if (/(when|schedule|appointment|next|last|fix)/i.test(lower)) {
+      const { data: logs } = await supabase
+        .from("maintenance_logs")
+        .select("description, vendor_name, reported_at, resolved_at, category")
+        .order("reported_at", { ascending: false })
+        .limit(3);
+
+      if (logs && logs.length > 0) {
+        const latest = logs[0];
+        return {
+          text: `The last service was on **${new Date(latest.reported_at).toLocaleDateString("en-US")}** — a **${latest.category}** job by **${latest.vendor_name ?? "Unknown"}**: "${latest.description}". ${latest.resolved_at ? `Resolved on ${new Date(latest.resolved_at).toLocaleDateString("en-US")}.` : "Still pending resolution."}`,
+        };
+      }
+      return { text: "No maintenance records found in the database." };
+    }
+
+    // Vendor queries
+    if (/(vendor|contractor|who|company)/i.test(lower)) {
+      const { data: vendors } = await supabase
+        .from("vendors")
+        .select("name, phone, specialty, rating, total_jobs, is_preferred")
+        .order("rating", { ascending: false })
+        .limit(5);
+
+      if (vendors && vendors.length > 0) {
+        const list = vendors
+          .map(
+            (v: any) =>
+              `- **${v.name}** (${(v.specialty ?? []).join(", ")}) — ${v.rating} stars, ${v.total_jobs} jobs${v.is_preferred ? " [Preferred]" : ""}`
+          )
+          .join("\n");
+        return { text: `Here are your top vendors:\n${list}` };
+      }
+      return { text: "No vendors found in the database." };
+    }
+
+    // Default: search maintenance logs
+    const { data: logs } = await supabase
+      .from("maintenance_logs")
+      .select("description, resolution, vendor_name, cost, reported_at, category")
+      .order("reported_at", { ascending: false })
+      .limit(3);
+
+    if (logs && logs.length > 0) {
+      return {
+        text: `Here are the most recent maintenance records:\n${logs.map((l: any) => `- **${l.category}** (${new Date(l.reported_at).toLocaleDateString("en-US")}): ${l.description}`).join("\n")}\n\nAsk me about invoices, vendors, or specific issue types for more detail.`,
+      };
+    }
+
     return {
-      text: `Your most recent plumbing service was on **${last.date}** by **${last.vendor}**. Here's the invoice from that visit — retrieved from your maintenance records in Supabase.`,
-      attachments: [last],
+      text: "I searched your property records but couldn't find a match. Could you be more specific — are you asking about a maintenance invoice, a scheduled appointment, or a vendor quote?",
+    };
+  } catch (err) {
+    console.error("Agent query error:", err);
+    return {
+      text: "I had trouble querying the database. Please try again.",
     };
   }
-
-  if (/(invoice|receipt|bill|payment|cost|price|charge)/i.test(lower)) {
-    return {
-      text: `I found ${MOCK_INVOICES.length} invoices matching plumbing work on this property. Showing the most recent two:`,
-      attachments: MOCK_INVOICES,
-    };
-  }
-
-  if (/(when|schedule|appointment|next|last|fix)/i.test(lower)) {
-    return {
-      text: "Based on the records I have, the last service appointment was on 2025-10-14 for a plumbing repair. The next scheduled visit is the HVAC service for Unit 7F, arriving in 2 days.",
-    };
-  }
-
-  return {
-    text: "I'm reviewing your property records. Could you be more specific — are you asking about a maintenance invoice, a scheduled appointment, or a vendor quote?",
-  };
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -129,7 +210,7 @@ function TranscriptBubble({ line }: { line: TranscriptLine }) {
     landlord: "text-purple-400",
   };
   const participantLabel: Record<string, string> = {
-    agent: "🤖 Agent",
+    agent: "Agent",
     guest: "Guest",
     vendor: "Vendor",
     landlord: "Landlord",
@@ -222,7 +303,7 @@ function ChatBubble({ message }: { message: ChatMessage }) {
         )}
       >
         <span className={cn("text-[10px] font-semibold block mb-0.5", isAgent ? "text-blue-400" : "text-purple-400")}>
-          {isAgent ? "🤖 Agent" : "You"}
+          {isAgent ? "Agent" : "You"}
         </span>
         {/* Simple bold markdown rendering */}
         {message.text.split(/(\*\*[^*]+\*\*)/).map((part, i) =>
@@ -270,6 +351,7 @@ export function CallTranscript({
   // Chat histories per tab (keyed by tab id)
   const [chatHistories, setChatHistories] = useState<Record<string, ChatMessage[]>>({});
   const [chatInputs, setChatInputs] = useState<Record<string, string>>({});
+  const [chatLoading, setChatLoading] = useState<Record<string, boolean>>({});
 
   const activeLog = callLogs.find((l) => l.status === "active");
   const hasQuotes = quotes && quotes.length > 0;
@@ -333,9 +415,9 @@ export function CallTranscript({
     });
   };
 
-  // ── Chat tab handlers ───────────────────────────────────────────────────────
+  // ── Chat tab handlers (Supabase-backed) ────────────────────────────────────
 
-  const sendChatMessage = (tabId: string) => {
+  const sendChatMessage = useCallback(async (tabId: string) => {
     const text = (chatInputs[tabId] ?? "").trim();
     if (!text) return;
 
@@ -351,10 +433,10 @@ export function CallTranscript({
       [tabId]: [...(prev[tabId] ?? []), userMsg],
     }));
     setChatInputs((prev) => ({ ...prev, [tabId]: "" }));
+    setChatLoading((prev) => ({ ...prev, [tabId]: true }));
 
-    // Simulate agent reply after short delay
-    setTimeout(() => {
-      const reply = getMockAgentReply(text);
+    try {
+      const reply = await getAgentReply(text);
       const agentMsg: ChatMessage = {
         id: `${tabId}-${Date.now()}-a`,
         role: "agent",
@@ -366,8 +448,21 @@ export function CallTranscript({
         ...prev,
         [tabId]: [...(prev[tabId] ?? []), agentMsg],
       }));
-    }, 600);
-  };
+    } catch {
+      const errorMsg: ChatMessage = {
+        id: `${tabId}-${Date.now()}-e`,
+        role: "agent",
+        text: "Something went wrong querying the database. Please try again.",
+        timestamp: new Date().toISOString(),
+      };
+      setChatHistories((prev) => ({
+        ...prev,
+        [tabId]: [...(prev[tabId] ?? []), errorMsg],
+      }));
+    } finally {
+      setChatLoading((prev) => ({ ...prev, [tabId]: false }));
+    }
+  }, [chatInputs]);
 
   const handleChatKeyDown = (tabId: string, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -380,6 +475,7 @@ export function CallTranscript({
 
   const isLiveTab = activeTabId === "live";
   const currentChatHistory = chatHistories[activeTabId] ?? [];
+  const isCurrentTabLoading = chatLoading[activeTabId] ?? false;
 
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] flex flex-col">
@@ -455,8 +551,8 @@ export function CallTranscript({
               <div className="flex flex-col gap-2 animate-slide-in">
                 <div className="flex gap-2 flex-row-reverse">
                   <div className="max-w-[80%] rounded-xl px-3 py-2 text-xs leading-relaxed bg-blue-500/10 border border-blue-500/20 text-[var(--text)] rounded-tr-sm">
-                    <span className="text-[10px] font-semibold block mb-0.5 text-blue-400">🤖 Agent</span>
-                    I've collected quotes from {quotes.length} vendor{quotes.length > 1 ? "s" : ""} and have a recommendation. Please review and approve below.
+                    <span className="text-[10px] font-semibold block mb-0.5 text-blue-400">Agent</span>
+                    I&apos;ve collected quotes from {quotes.length} vendor{quotes.length > 1 ? "s" : ""} and have a recommendation. Please review and approve below.
                   </div>
                 </div>
                 <div className="ml-2 mr-0">
@@ -550,6 +646,18 @@ export function CallTranscript({
             {currentChatHistory.map((msg) => (
               <ChatBubble key={msg.id} message={msg} />
             ))}
+
+            {isCurrentTabLoading && (
+              <div className="flex justify-end animate-slide-in">
+                <div className="rounded-xl px-3 py-2 bg-blue-500/10 border border-blue-500/20">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-[10px] text-blue-400">Searching Supabase...</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div ref={chatBottomRef} />
           </div>
 
@@ -565,7 +673,7 @@ export function CallTranscript({
               />
               <button
                 onClick={() => sendChatMessage(activeTabId)}
-                disabled={!(chatInputs[activeTabId] ?? "").trim()}
+                disabled={!(chatInputs[activeTabId] ?? "").trim() || isCurrentTabLoading}
                 className="flex items-center justify-center w-6 h-6 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex-shrink-0"
               >
                 <Send size={11} className="text-white" />

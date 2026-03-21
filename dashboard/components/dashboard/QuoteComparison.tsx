@@ -54,7 +54,7 @@ function QuoteCard({
           ? "border-emerald-500/40 bg-emerald-500/5"
           : isRecommended
           ? "border-blue-500/40 bg-blue-500/5"
-          : "border-[#2a2a3a] bg-[#111118]",
+          : "border-[var(--border)] bg-[var(--surface)]",
         isDisabled && !isApproved && "opacity-40"
       )}
     >
@@ -74,28 +74,28 @@ function QuoteCard({
 
       {/* Vendor name */}
       <div className="mt-1">
-        <p className="text-sm font-semibold text-[#e8e8f0]">{quote.vendor_name}</p>
+        <p className="text-sm font-semibold text-[var(--text)]">{quote.vendor_name}</p>
         <StarRating rating={quote.vendor_rating} />
       </div>
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 gap-2">
-        <div className="flex items-center gap-1.5 bg-[#1a1a24] rounded-lg px-2.5 py-2">
+        <div className="flex items-center gap-1.5 bg-[var(--surface-2)] rounded-lg px-2.5 py-2">
           <DollarSign size={12} className="text-green-400" />
-          <span className="text-sm font-bold text-[#e8e8f0]">
+          <span className="text-sm font-bold text-[var(--text)]">
             {formatCurrency(quote.amount)}
           </span>
         </div>
-        <div className="flex items-center gap-1.5 bg-[#1a1a24] rounded-lg px-2.5 py-2">
+        <div className="flex items-center gap-1.5 bg-[var(--surface-2)] rounded-lg px-2.5 py-2">
           <Clock size={12} className="text-orange-400" />
-          <span className="text-sm font-bold text-[#e8e8f0]">
+          <span className="text-sm font-bold text-[var(--text)]">
             {quote.eta_days}d
           </span>
         </div>
-        <div className="col-span-2 flex items-center gap-1.5 bg-[#1a1a24] rounded-lg px-2.5 py-2">
+        <div className="col-span-2 flex items-center gap-1.5 bg-[var(--surface-2)] rounded-lg px-2.5 py-2">
           <Briefcase size={12} className="text-blue-400" />
-          <span className="text-[11px] text-[#9ca3af]">
-            <span className="text-[#e8e8f0] font-medium">{quote.vendor_jobs_on_property}</span>{" "}
+          <span className="text-[11px] text-[var(--text-subtle)]">
+            <span className="text-[var(--text)] font-medium">{quote.vendor_jobs_on_property}</span>{" "}
             prior jobs on this property
           </span>
         </div>
@@ -106,13 +106,13 @@ function QuoteCard({
         <div>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="flex items-center gap-1 text-[10px] text-[#6b7280] hover:text-[#9ca3af] transition-colors"
+            className="flex items-center gap-1 text-[10px] text-[var(--text-muted)] hover:text-[var(--text-subtle)] transition-colors"
           >
             {expanded ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
             Call transcript
           </button>
           {expanded && (
-            <div className="mt-2 text-[10px] text-[#6b7280] bg-[#0a0a0f] rounded-lg p-2.5 leading-relaxed border border-[#2a2a3a] max-h-24 overflow-y-auto">
+            <div className="mt-2 text-[10px] text-[var(--text-muted)] bg-[var(--background)] rounded-lg p-2.5 leading-relaxed border border-[var(--border)] max-h-24 overflow-y-auto">
               {quote.call_transcript}
             </div>
           )}
@@ -128,7 +128,7 @@ function QuoteCard({
             "w-full py-2 rounded-lg text-xs font-semibold transition-all border",
             isRecommended
               ? "bg-blue-600 hover:bg-blue-500 border-blue-500 text-white"
-              : "bg-[#1a1a24] hover:bg-[#2a2a3a] border-[#2a2a3a] text-[#9ca3af] hover:text-[#e8e8f0]",
+              : "bg-[var(--surface-2)] hover:bg-[var(--border)] border-[var(--border)] text-[var(--text-subtle)] hover:text-[var(--text)]",
             loading && "opacity-60 cursor-wait"
           )}
         >
@@ -166,13 +166,13 @@ export function QuoteComparison({
   const recommended = quotes.find((q) => q.recommended);
 
   return (
-    <div className="rounded-xl border border-[#2a2a3a] bg-[#111118] p-4 flex flex-col gap-4">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-[#e8e8f0] uppercase tracking-wider">
+        <span className="text-xs font-semibold text-[var(--text)] uppercase tracking-wider">
           Quote Comparison
         </span>
-        <span className="text-[10px] text-[#6b7280]">
+        <span className="text-[10px] text-[var(--text-muted)]">
           {quotes.length} vendor{quotes.length > 1 ? "s" : ""} responded
         </span>
       </div>
@@ -187,7 +187,7 @@ export function QuoteComparison({
             <p className="text-xs font-medium text-blue-300">
               Gemini recommends {recommended.vendor_name}
             </p>
-            <p className="text-[10px] text-[#6b7280] mt-0.5">
+            <p className="text-[10px] text-[var(--text-muted)] mt-0.5">
               {formatCurrency(recommended.amount)} · {recommended.eta_days} days · best price/speed ratio for this property
             </p>
           </div>

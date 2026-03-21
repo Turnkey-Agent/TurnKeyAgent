@@ -112,14 +112,25 @@ function pcmToBuffer(pcm: Int16Array): Buffer {
   return buf;
 }
 
+let twilioToGeminiCount = 0;
+
 /**
  * Twilio → Gemini: μ-law 8kHz → PCM 16-bit 8kHz (no resample)
  * Gemini Live API accepts PCM at 8kHz natively.
  */
 export function twilioToGemini(base64Mulaw: string): string {
   const mulawBuf = Buffer.from(base64Mulaw, "base64");
+  if (mulawBuf.length === 0) {
+    console.warn("[Audio] twilioToGemini received empty audio chunk");
+    return "";
+  }
   const pcm8k = decodeMulaw(mulawBuf);
-  return pcmToBuffer(pcm8k).toString("base64");
+  const result = pcmToBuffer(pcm8k).toString("base64");
+  twilioToGeminiCount++;
+  if (twilioToGeminiCount <= 3) {
+    console.log(`[Audio] twilioToGemini: ${mulawBuf.length} mulaw bytes -> ${pcm8k.length} PCM samples -> ${result.length} b64 chars`);
+  }
+  return result;
 }
 
 /**
