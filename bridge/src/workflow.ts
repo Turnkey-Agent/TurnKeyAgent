@@ -17,6 +17,7 @@ interface WorkflowState {
   status: "guest_call" | "vendor_calls" | "pending_approval" | "scheduling" | "complete" | "error";
   quotes: Array<{ vendorPhone: string; amount?: number; eta_days?: number; notes?: string }>;
   selectedVendorPhone: string | null;
+  vendorCallsDone: number;
   config: WorkflowConfig;
 }
 
@@ -41,6 +42,7 @@ export async function startWorkflow(cfg: WorkflowConfig): Promise<WorkflowState>
     status: "guest_call",
     quotes: [],
     selectedVendorPhone: null,
+    vendorCallsDone: 0,
     config: cfg,
   };
   workflows.set(id, state);

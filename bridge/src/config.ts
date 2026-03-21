@@ -1,7 +1,9 @@
 import dotenv from "dotenv";
-import { resolve } from "path";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config({ path: resolve(new URL(".", import.meta.url).pathname, "../../.env"), override: true });
+const __dirname = dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: resolve(__dirname, "../../.env"), override: true });
 
 function required(name: string): string {
   const value = process.env[name];
@@ -18,15 +20,15 @@ export const config = {
   geminiReasoningModel: "gemini-2.0-flash",
 
   // Twilio
-  twilioAccountSid: required("TWILIO_ACCOUNT_SID"),
-  twilioAuthToken: required("TWILIO_AUTH_TOKEN"),
-  twilioPhoneNumber: required("TWILIO_PHONE_NUMBER"),
+  twilioAccountSid: process.env.TWILIO_ACCOUNT_SID || "",
+  twilioAuthToken: process.env.TWILIO_AUTH_TOKEN || "",
+  twilioPhoneNumber: process.env.TWILIO_PHONE_NUMBER || "+16282370507",
 
   // Supabase
   supabaseUrl: required("SUPABASE_URL"),
   supabaseServiceKey: required("SUPABASE_SERVICE_ROLE_KEY"),
 
   // Server
-  port: parseInt(process.env.BRIDGE_PORT || "3000", 10),
+  port: parseInt(process.env.BRIDGE_PORT || "3456", 10),
   ngrokUrl: process.env.NGROK_URL || "",
 };
