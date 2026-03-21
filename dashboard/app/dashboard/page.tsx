@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useIncidentRealtime } from "@/hooks/useIncidentRealtime";
 import { ActiveCallsPanel } from "@/components/dashboard/ActiveCallsPanel";
@@ -35,6 +35,11 @@ const DEMO_INCIDENT_ID = process.env.NEXT_PUBLIC_DEMO_INCIDENT_ID ?? null;
 export default function DashboardPage() {
   const [incidentId, setIncidentId] = useState<string | null>(DEMO_INCIDENT_ID);
   const [sidebarWidth, setSidebarWidth] = useState(256);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
   const isDragging = useRef(false);
   const dragStartX = useRef(0);
   const dragStartWidth = useRef(0);
@@ -138,16 +143,29 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* ── Top nav ──────────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-10 border-b border-[#2a2a3a] bg-[#0a0a0f]/80 backdrop-blur px-6 py-3 flex items-center justify-between">
+      <header className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--background-blur)] backdrop-blur px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-xs font-bold text-white">
             TK
           </div>
-          <span className="text-sm font-semibold text-[#e8e8f0]">Turnkey Agent</span>
-          <span className="text-[#2a2a3a]">·</span>
-          <span className="text-sm text-[#6b7280]">Lemon Property</span>
+          <span className="text-sm font-semibold text-[var(--text)]">Turnkey Agent</span>
+          <span className="text-[var(--border)]">·</span>
+          <span className="text-sm text-[var(--text-muted)]">Lemon Property</span>
         </div>
-        {incident && <StatusBadge status={incident.status} />}
+        <div className="flex items-center gap-3">
+          {incident && <StatusBadge status={incident.status} />}
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="w-8 h-8 rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+            title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {theme === "dark" ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            )}
+          </button>
+        </div>
       </header>
 
       {/* ── Main layout ───────────────────────────────────────────────────────── */}
@@ -155,25 +173,25 @@ export default function DashboardPage() {
         {/* Left sidebar */}
         <aside
           style={{ width: sidebarWidth }}
-          className="flex-shrink-0 border-r border-[#2a2a3a] p-4 flex flex-col gap-4 sticky top-[49px] self-start h-[calc(100vh-49px)] overflow-y-auto">
+          className="flex-shrink-0 border-r border-[var(--border)] p-4 flex flex-col gap-4 sticky top-[49px] self-start h-[calc(100vh-49px)] overflow-y-auto">
           <ActiveCallsPanel callLogs={callLogs} />
           <GeminiActivityFeed activities={geminiActivity} />
 
           {/* Property context */}
-          <div className="rounded-xl border border-[#2a2a3a] bg-[#111118] p-4 flex flex-col gap-2">
-            <span className="text-xs font-semibold text-[#e8e8f0] uppercase tracking-wider">
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 flex flex-col gap-2">
+            <span className="text-xs font-semibold text-[var(--text)] uppercase tracking-wider">
               Property
             </span>
-            <div className="text-[11px] text-[#6b7280] space-y-1">
-              <p className="text-[#e8e8f0] font-medium">742 Evergreen Terrace</p>
+            <div className="text-[11px] text-[var(--text-muted)] space-y-1">
+              <p className="text-[var(--text)] font-medium">742 Evergreen Terrace</p>
               <p>Unit 3B · Occupied</p>
               <p className="text-blue-400">
                 {incident?.related_maintenance_ids?.length ?? 0} similar past issues
               </p>
             </div>
-            <div className="pt-1 border-t border-[#1a1a24]">
-              <p className="text-[10px] text-[#6b7280]">Vendor code</p>
-              <p className="text-xs font-mono text-[#e8e8f0] tracking-widest">••••</p>
+            <div className="pt-1 border-t border-[var(--border-subtle)]">
+              <p className="text-[10px] text-[var(--text-muted)]">Vendor code</p>
+              <p className="text-xs font-mono text-[var(--text)] tracking-widest">••••</p>
             </div>
           </div>
 
@@ -189,9 +207,9 @@ export default function DashboardPage() {
         <main className="flex-1 p-6 flex flex-col gap-4">
           {/* Quick-deploy: 10 pre-configured issues — shown when no active incident */}
           {!incident && (
-            <div className="rounded-xl border border-[#2a2a3a] bg-[#111118] p-6">
-              <h2 className="text-lg font-semibold text-[#e8e8f0] mb-2">Deploy Turnkey Agent</h2>
-              <p className="text-xs text-[#6b7280] mb-4">Select an issue to start the agent. It will call the guest, dispatch vendors, and get you a recommendation.</p>
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6">
+              <h2 className="text-lg font-semibold text-[var(--text)] mb-2">Deploy Turnkey Agent</h2>
+              <p className="text-xs text-[var(--text-muted)] mb-4">Select an issue to start the agent. It will call the guest, dispatch vendors, and get you a recommendation.</p>
               <div className="grid grid-cols-2 gap-2 mb-4">
                 {PRESET_ISSUES.map((issue) => (
                   <button
@@ -201,12 +219,12 @@ export default function DashboardPage() {
                       handleDeployAgent(issue.description);
                     }}
                     disabled={deploying}
-                    className="flex items-center gap-3 p-3 rounded-lg border border-[#2a2a3a] bg-[#0a0a0f] hover:border-blue-500/50 hover:bg-[#1a1a2a] text-left transition-all disabled:opacity-50 group"
+                    className="flex items-center gap-3 p-3 rounded-lg border border-[var(--border)] bg-[var(--background)] hover:border-blue-500/50 hover:bg-[var(--surface-2)] text-left transition-all disabled:opacity-50 group"
                   >
                     <span className="text-xl flex-shrink-0">{issue.icon}</span>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-[#e8e8f0] truncate">{issue.title}</p>
-                      <p className="text-[10px] text-[#6b7280] truncate">{issue.subtitle}</p>
+                      <p className="text-sm font-medium text-[var(--text)] truncate">{issue.title}</p>
+                      <p className="text-[10px] text-[var(--text-muted)] truncate">{issue.subtitle}</p>
                     </div>
                     <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 flex-shrink-0">
                       {issue.urgency}
@@ -222,12 +240,12 @@ export default function DashboardPage() {
                   onChange={(e) => setSituation(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && situation.trim() && handleDeployAgent()}
                   placeholder="Or describe a custom issue..."
-                  className="flex-1 px-3 py-2 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-sm text-[#e8e8f0] placeholder:text-[#6b7280] focus:outline-none focus:border-blue-500"
+                  className="flex-1 px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--border)] text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500"
                 />
                 <button
                   onClick={() => handleDeployAgent()}
                   disabled={deploying || !situation.trim()}
-                  className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 disabled:bg-[#333] text-white text-sm font-semibold transition-colors flex-shrink-0"
+                  className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 disabled:bg-[var(--surface-2)] text-white text-sm font-semibold transition-colors flex-shrink-0"
                 >
                   {deploying ? "..." : "Deploy"}
                 </button>
@@ -235,32 +253,34 @@ export default function DashboardPage() {
             </div>
           )}
 
+          {/* Incident card — only when active */}
           {incident && (
-            <>
-              <IncidentCard
-                incident={incident}
-                unitNumber="3B"
-                propertyName="Lemon Property"
-              />
-
-              <CallTranscript
-                callLogs={callLogs}
-                quotes={incident.quotes}
-                incidentId={incident.id}
-                approvedVendorId={incident.selected_vendor_id}
-                onApprove={handleApprove}
-              />
-
-              <EventTimeline events={incident.timeline} />
-            </>
+            <IncidentCard
+              incident={incident}
+              unitNumber="3B"
+              propertyName="Lemon Property"
+            />
           )}
 
+          {/* Loading state after deploy click */}
           {isLoading && !incident && incidentId && (
-            <div className="flex items-center justify-center py-12">
-              <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-3" />
-              <span className="text-sm text-[#6b7280]">Agent deploying...</span>
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 flex items-center justify-center">
+              <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-3" />
+              <span className="text-sm text-[var(--text-muted)]">Agent deploying — calling guest...</span>
             </div>
           )}
+
+          {/* Live Transcript — always visible */}
+          <CallTranscript
+            callLogs={incident ? callLogs : []}
+            quotes={incident?.quotes ?? []}
+            incidentId={incident?.id ?? ""}
+            approvedVendorId={incident?.selected_vendor_id ?? null}
+            onApprove={handleApprove}
+          />
+
+          {/* Timeline — always visible */}
+          <EventTimeline events={incident?.timeline ?? []} />
         </main>
       </div>
     </div>
