@@ -8,11 +8,24 @@ interface GeminiActivityFeedProps {
   activities: GeminiActivity[];
 }
 
+const fallbackConfig = {
+  label: "Gemini",
+  color: "text-gray-400",
+  bg: "bg-gray-500/10 border-gray-500/20",
+  icon: <Brain size={11} />,
+};
+
 const modelConfig: Record<
   GeminiModel,
   { label: string; color: string; bg: string; icon: React.ReactNode }
 > = {
   "gemini-2.5-flash-native-audio": {
+    label: "Native Audio",
+    color: "text-green-400",
+    bg: "bg-green-500/10 border-green-500/20",
+    icon: <Mic size={11} />,
+  },
+  "gemini-2.5-flash-native-audio-latest": {
     label: "Native Audio",
     color: "text-green-400",
     bg: "bg-green-500/10 border-green-500/20",
@@ -39,7 +52,7 @@ const modelConfig: Record<
 };
 
 function ActivityRow({ activity }: { activity: GeminiActivity }) {
-  const config = modelConfig[activity.model];
+  const config = modelConfig[activity.model] ?? fallbackConfig;
   const isActive = activity.status === "active";
 
   return (

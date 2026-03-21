@@ -78,10 +78,10 @@ export function IncidentCard({ incident, unitNumber, propertyName }: IncidentCar
             })}
           </span>
         </div>
-        {incident.related_maintenance_ids.length > 0 && (
+        {(incident.related_maintenance_ids?.length ?? 0) > 0 && (
           <div className="text-[10px] text-blue-400">
-            {incident.related_maintenance_ids.length} similar past issue
-            {incident.related_maintenance_ids.length > 1 ? "s" : ""} found
+            {incident.related_maintenance_ids!.length} similar past issue
+            {incident.related_maintenance_ids!.length > 1 ? "s" : ""} found
           </div>
         )}
       </div>

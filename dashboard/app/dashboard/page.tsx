@@ -247,7 +247,7 @@ export default function DashboardPage() {
               <p className="text-[#e8e8f0] font-medium">742 Evergreen Terrace</p>
               <p>Unit 3B · Occupied</p>
               <p className="text-blue-400">
-                {incident.related_maintenance_ids.length} similar past issues
+                {incident.related_maintenance_ids?.length ?? 0} similar past issues
               </p>
             </div>
             <div className="pt-1 border-t border-[#1a1a24]">

@@ -41,13 +41,13 @@ export interface TimelineEvent {
 export interface Incident {
   id: string;
   property_id: string;
-  unit_id: string;
+  unit_id: string | null;
   status: IncidentStatus;
   category: IncidentCategory;
   description: string;
-  guest_phone: string;
+  guest_phone: string | null;
   urgency: Urgency;
-  related_maintenance_ids: string[];
+  related_maintenance_ids: string[] | null;
   quotes: Quote[];
   selected_vendor_id: string | null;
   approved_by: string | null;
@@ -85,9 +85,11 @@ export interface CallLog {
 
 export type GeminiModel =
   | "gemini-2.5-flash-native-audio"
+  | "gemini-2.5-flash-native-audio-latest"
   | "gemini-embedding-2"
   | "gemini-3.1-flash"
-  | "gemini-2.5-flash-tts";
+  | "gemini-2.5-flash-tts"
+  | string; // allow new model names from DB
 
 export type GeminiModelStatus = "idle" | "active" | "done";
 
