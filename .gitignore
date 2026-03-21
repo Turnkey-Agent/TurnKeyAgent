@@ -27,3 +27,9 @@ Thumbs.db
 
 # Vercel
 .vercel/
+
+# Bridge build output
+bridge/dist/
+
+# Backup files
+*.yolo.bak

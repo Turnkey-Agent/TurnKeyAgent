@@ -64,36 +64,40 @@ Every interaction is a **real phone call** — not chat, not a simulation.
 ### Prerequisites
 
 - Node.js 20+
-- Python 3.11+ (for voice bridge)
-- Twilio account with a phone number
-- Supabase project
-- Google AI Studio API key
-- Google Calendar service account
+- ngrok (for exposing the bridge to Twilio)
+- Supabase project with schema from `docs/database-schema.md`
+- Google AI Studio API key (Gemini 2.5 Flash + 3.1 Flash access)
 
 ### Environment Variables
 
 ```bash
 cp .env.example .env
-# Fill in all values — see docs/risk-mitigation.md for the full list
+# Fill in all values — the .env is tracked for hackathon team sync
 ```
 
-### Setup
+### Quick Start (3 terminals)
 
 ```bash
-# Install dependencies
-npm install
+# Terminal 1 — Voice Bridge
+cd bridge && npm install && npx tsx src/index.ts
 
-# Set up Supabase schema
-# Run the SQL from docs/database-schema.md in your Supabase SQL editor
+# Terminal 2 — ngrok tunnel
+ngrok http 3000
+# Copy the https URL, then:
+npx tsx scripts/setup-twilio.ts https://YOUR-NGROK-URL.ngrok.io
 
-# Generate and embed seed data
+# Terminal 3 — Dashboard
+cd app && npm install && npm run dev
+```
+
+Then call **+1 (628) 237-0507** — the AI agent answers!
+
+### Seed Data
+
+```bash
+# Set up Supabase schema first (run SQL from docs/database-schema.md)
+# Then generate and embed maintenance history:
 python scripts/embed_and_upload.py
-
-# Start the dashboard
-npm run dev
-
-# Start the voice bridge (separate terminal)
-python bridge/server.py
 ```
 
 ---
