@@ -4,7 +4,7 @@ bridge/
 scripts/
 sql/
 docs/
-supabase/
+/supabase/
 .claude/
 node_modules/
 *.pyc
