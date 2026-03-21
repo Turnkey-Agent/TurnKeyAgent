@@ -1,0 +1,13 @@
+{
+  "name": "turnkey-agent",
+  "private": true,
+  "workspaces": ["bridge", "app"],
+  "scripts": {
+    "dev:bridge": "cd bridge && npx tsx src/index.ts",
+    "dev:app": "cd app && npm run dev",
+    "setup:twilio": "npx tsx scripts/setup-twilio.ts"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
