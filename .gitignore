@@ -1,5 +1,5 @@
-# Environment variables (NOTE: .env is tracked for hackathon team sync — rotate keys after event)
-# .env
+# Environment variables
+.env
 .env.local
 .env.*.local
 
