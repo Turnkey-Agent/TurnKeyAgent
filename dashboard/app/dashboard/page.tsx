@@ -14,92 +14,26 @@ import type { Incident } from "@/lib/types";
 
 const BRIDGE_URL = process.env.NEXT_PUBLIC_BRIDGE_URL || "http://localhost:3456";
 
+// ─── Pre-configured issues matching the 10 generated videos ─────────────────
+const PRESET_ISSUES = [
+  { id: "toilet", icon: "🚽", title: "Toilet Overflow", subtitle: "Bathroom flooding, water on floor", urgency: "Emergency", category: "plumbing", description: "Toilet is overflowing in the bathroom. Water is flooding onto the tile floor and spreading. Guest reports water EVERYWHERE." },
+  { id: "flush", icon: "🔧", title: "Broken Flush Handle", subtitle: "Flush handle snapped, can't flush", urgency: "High", category: "plumbing", description: "The toilet flush handle is broken and won't work. Guest has been trying to fix it but the handle just spins. Can't flush at all." },
+  { id: "sink", icon: "🍜", title: "Clogged Kitchen Sink", subtitle: "Sink overflowing with standing water", urgency: "High", category: "plumbing", description: "Kitchen sink is completely clogged and overflowing. Standing water rising with dirty dishes piled up. Water about to spill onto the floor." },
+  { id: "disposal", icon: "⚙️", title: "Garbage Disposal Grinding", subtitle: "Terrible grinding noise, won't drain", urgency: "Medium", category: "appliance", description: "Garbage disposal is making a terrible grinding noise. Something is stuck in it. Kitchen sink won't drain and there's a burning smell." },
+  { id: "ac", icon: "🥵", title: "AC Broken During Heatwave", subtitle: "No cooling, 95°F inside", urgency: "Emergency", category: "hvac", description: "AC completely stopped working during a heatwave. It's 95 degrees outside and the unit is just humming but not cooling. Guest is sweating profusely." },
+  { id: "pipe", icon: "💧", title: "Pipe Leak Under Sink", subtitle: "PVC joint dripping, bucket overflowing", urgency: "Emergency", category: "plumbing", description: "Water is leaking from the PVC pipe joint under the bathroom sink. The bucket underneath is overflowing. This is the same pipe that was fixed in October 2024." },
+  { id: "electrical", icon: "⚡", title: "Electrical Sparks", subtitle: "Power strip sparking, monitors flickering", urgency: "Emergency", category: "electrical", description: "The power strip with all the laptop chargers just sparked. All the monitors in the room flickered. There's a burning plastic smell." },
+  { id: "smoke", icon: "🔔", title: "Smoke Detector Beeping", subtitle: "3am beeping, can't reach it", urgency: "Medium", category: "electrical", description: "Smoke detector has been beeping every 30 seconds since 3am. Battery is dead. Guest can't reach it even standing on a chair." },
+  { id: "door", icon: "🚪", title: "Door Lock Jammed", subtitle: "Can't open front door, key stuck", urgency: "High", category: "structural", description: "Front door lock is completely jammed. The key goes in but won't turn. Guest is locked inside and has a pizza delivery waiting outside." },
+  { id: "ceiling", icon: "💦", title: "Ceiling Leak", subtitle: "Water dripping onto desk and electronics", urgency: "Emergency", category: "structural", description: "Water is dripping from a brown stain on the ceiling directly onto the desk with monitors and keyboards. Guest is frantically moving laptops." },
+];
+
 // ─── Hardcoded for demo: the latest open incident ─────────────────────────────
 const DEMO_INCIDENT_ID = process.env.NEXT_PUBLIC_DEMO_INCIDENT_ID ?? null;
 
-// Fallback mock for development before Supabase is wired up
-const MOCK_INCIDENT: Incident = {
-  id: "mock-1234-5678-abcd",
-  property_id: "prop-lemon",
-  unit_id: "unit-3b",
-  status: "quoting",
-  category: "plumbing",
-  description:
-    "Guest reports water flooding from bathroom. Possible pipe failure under sink. Similar to Oct 2024 incident with PVC joint.",
-  guest_phone: "+17654134446",
-  urgency: "emergency",
-  related_maintenance_ids: ["maint-oct-2024", "maint-jul-2022"],
-  quotes: [
-    {
-      vendor_id: "vendor-plumber1",
-      vendor_name: "Mike's Plumbing",
-      vendor_phone: "+14085812962",
-      vendor_rating: 4.9,
-      vendor_jobs_on_property: 12,
-      amount: 300,
-      eta_days: 2,
-      recommended: true,
-      call_transcript:
-        "[Agent]: Hi Mike, emergency pipe leak at 742 Evergreen Terrace, Unit 3B.\n[Vendor]: Yeah I know that place. PVC under the sink again?\n[Agent]: Likely. Quote and availability?\n[Vendor]: $300, Wednesday morning.",
-    },
-    {
-      vendor_id: "vendor-plumber2",
-      vendor_name: "Derek & Sons",
-      vendor_phone: "+13142990513",
-      vendor_rating: 4.2,
-      vendor_jobs_on_property: 3,
-      amount: 1000,
-      eta_days: 5,
-      recommended: false,
-    },
-  ],
-  selected_vendor_id: null,
-  approved_by: null,
-  approved_at: null,
-  scheduled_at: null,
-  resolved_at: null,
-  timeline: [
-    {
-      timestamp: new Date(Date.now() - 8 * 60000).toISOString(),
-      event: "Guest call received (angry)",
-      details: "Caller reported water flooding from bathroom",
-      model: "gemini-2.5-flash-native-audio",
-    },
-    {
-      timestamp: new Date(Date.now() - 7 * 60000).toISOString(),
-      event: "Searched 5-year maintenance history",
-      details: "Found 3 similar plumbing records: Oct 2024, Jul 2022, Jan 2022",
-      model: "gemini-embedding-2",
-    },
-    {
-      timestamp: new Date(Date.now() - 6 * 60000).toISOString(),
-      event: "Dispatched parallel vendor calls",
-      details: "Calling Mike's Plumbing and Derek & Sons simultaneously",
-      model: "gemini-2.5-flash-native-audio",
-    },
-    {
-      timestamp: new Date(Date.now() - 4 * 60000).toISOString(),
-      event: "Quote received: Mike's Plumbing — $300 / 2 days",
-      model: "gemini-2.5-flash-native-audio",
-    },
-    {
-      timestamp: new Date(Date.now() - 2 * 60000).toISOString(),
-      event: "Quote received: Derek & Sons — $1,000 / 5 days",
-      model: "gemini-2.5-flash-native-audio",
-    },
-    {
-      timestamp: new Date(Date.now() - 1 * 60000).toISOString(),
-      event: "AI recommendation generated",
-      details: "Mike's Plumbing: 70% cheaper, 3 days faster, 12 prior jobs on property",
-      model: "gemini-3.1-flash",
-    },
-  ],
-  created_at: new Date(Date.now() - 9 * 60000).toISOString(),
-};
 
 export default function DashboardPage() {
   const [incidentId, setIncidentId] = useState<string | null>(DEMO_INCIDENT_ID);
-  const [useMock, setUseMock] = useState(!DEMO_INCIDENT_ID);
   const [sidebarWidth, setSidebarWidth] = useState(256);
   const isDragging = useRef(false);
   const dragStartX = useRef(0);
@@ -110,15 +44,17 @@ export default function DashboardPage() {
   const [deploying, setDeploying] = useState(false);
   const [workflowActive, setWorkflowActive] = useState(false);
 
-  const handleDeployAgent = async () => {
-    if (!situation.trim()) return;
+  const handleDeployAgent = async (overrideDescription?: string) => {
+    const desc = overrideDescription || situation;
+    if (!desc.trim()) return;
+    if (overrideDescription) setSituation(overrideDescription);
     setDeploying(true);
     try {
       const res = await fetch(`${BRIDGE_URL}/workflow/start`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          situation,
+          situation: desc,
           guestPhone: "+13142990513",    // Ayush
           vendor1Phone: "+12832328091",   // Chow
           vendor2Phone: "+14085812962",   // Arnav
@@ -128,7 +64,6 @@ export default function DashboardPage() {
       const data = await res.json();
       if (data.incidentId) {
         setIncidentId(data.incidentId);
-        setUseMock(false);
         setWorkflowActive(true);
       }
     } catch (err) {
@@ -164,8 +99,7 @@ export default function DashboardPage() {
   const { incident: liveIncident, callLogs, geminiActivity, isLoading } =
     useIncidentRealtime(incidentId);
 
-  // If no env var set, use mock data so dashboard renders immediately
-  const incident = useMock ? MOCK_INCIDENT : liveIncident;
+  const incident = liveIncident;
 
   // Handle approval — calls bridge to trigger scheduling call
   const handleApprove = async (vendorId: string) => {
@@ -201,19 +135,6 @@ export default function DashboardPage() {
     });
   };
 
-  if (!incident) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-sm text-[#6b7280]">
-            {isLoading ? "Loading incident..." : "No active incidents"}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex flex-col">
       {/* ── Top nav ──────────────────────────────────────────────────────────── */}
@@ -226,7 +147,7 @@ export default function DashboardPage() {
           <span className="text-[#2a2a3a]">·</span>
           <span className="text-sm text-[#6b7280]">Lemon Property</span>
         </div>
-        <StatusBadge status={incident.status} />
+        {incident && <StatusBadge status={incident.status} />}
       </header>
 
       {/* ── Main layout ───────────────────────────────────────────────────────── */}
@@ -235,8 +156,8 @@ export default function DashboardPage() {
         <aside
           style={{ width: sidebarWidth }}
           className="flex-shrink-0 border-r border-[#2a2a3a] p-4 flex flex-col gap-4 sticky top-[49px] self-start h-[calc(100vh-49px)] overflow-y-auto">
-          <ActiveCallsPanel callLogs={useMock ? MOCK_CALL_LOGS : callLogs} />
-          <GeminiActivityFeed activities={useMock ? MOCK_GEMINI_ACTIVITY : geminiActivity} />
+          <ActiveCallsPanel callLogs={callLogs} />
+          <GeminiActivityFeed activities={geminiActivity} />
 
           {/* Property context */}
           <div className="rounded-xl border border-[#2a2a3a] bg-[#111118] p-4 flex flex-col gap-2">
@@ -247,7 +168,7 @@ export default function DashboardPage() {
               <p className="text-[#e8e8f0] font-medium">742 Evergreen Terrace</p>
               <p>Unit 3B · Occupied</p>
               <p className="text-blue-400">
-                {incident.related_maintenance_ids?.length ?? 0} similar past issues
+                {incident?.related_maintenance_ids?.length ?? 0} similar past issues
               </p>
             </div>
             <div className="pt-1 border-t border-[#1a1a24]">
@@ -256,12 +177,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {useMock && (
-            <div className="text-[10px] text-[#6b7280] text-center px-2">
-              Mock data — set{" "}
-              <code className="text-blue-400">NEXT_PUBLIC_DEMO_INCIDENT_ID</code> to use live Supabase
-            </div>
-          )}
         </aside>
 
         {/* Drag handle */}
@@ -272,140 +187,83 @@ export default function DashboardPage() {
 
         {/* Main content */}
         <main className="flex-1 p-6 flex flex-col gap-4">
-          {/* Workflow trigger — landlord types situation and deploys agent */}
-          {!workflowActive && !DEMO_INCIDENT_ID && (
+          {/* Quick-deploy: 10 pre-configured issues — shown when no active incident */}
+          {!incident && (
             <div className="rounded-xl border border-[#2a2a3a] bg-[#111118] p-6">
               <h2 className="text-lg font-semibold text-[#e8e8f0] mb-2">Deploy Turnkey Agent</h2>
-              <p className="text-xs text-[#6b7280] mb-4">Describe the situation. The agent will call the guest, get vendor quotes, and present a recommendation.</p>
-              <textarea
-                value={situation}
-                onChange={(e) => setSituation(e.target.value)}
-                placeholder="Guest reported bathroom flooding from burst pipe under sink. Water spreading to hallway. Guest is upset and wants immediate resolution."
-                rows={3}
-                className="w-full p-3 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-sm text-[#e8e8f0] resize-none mb-3 focus:outline-none focus:border-blue-500"
-              />
-              <button
-                onClick={handleDeployAgent}
-                disabled={deploying || !situation.trim()}
-                className="px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-500 disabled:bg-[#333] text-white text-sm font-semibold transition-colors"
-              >
-                {deploying ? "Deploying..." : "Deploy Agent"}
-              </button>
-              <p className="text-[10px] text-[#6b7280] mt-2">
-                Calls: Ayush (guest) → Chow + Arnav (vendors) → You (approval)
-              </p>
+              <p className="text-xs text-[#6b7280] mb-4">Select an issue to start the agent. It will call the guest, dispatch vendors, and get you a recommendation.</p>
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                {PRESET_ISSUES.map((issue) => (
+                  <button
+                    key={issue.id}
+                    onClick={() => {
+                      setSituation(issue.description);
+                      handleDeployAgent(issue.description);
+                    }}
+                    disabled={deploying}
+                    className="flex items-center gap-3 p-3 rounded-lg border border-[#2a2a3a] bg-[#0a0a0f] hover:border-blue-500/50 hover:bg-[#1a1a2a] text-left transition-all disabled:opacity-50 group"
+                  >
+                    <span className="text-xl flex-shrink-0">{issue.icon}</span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-[#e8e8f0] truncate">{issue.title}</p>
+                      <p className="text-[10px] text-[#6b7280] truncate">{issue.subtitle}</p>
+                    </div>
+                    <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 flex-shrink-0">
+                      {issue.urgency}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Custom input fallback */}
+              <div className="flex gap-2">
+                <input
+                  value={situation}
+                  onChange={(e) => setSituation(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && situation.trim() && handleDeployAgent()}
+                  placeholder="Or describe a custom issue..."
+                  className="flex-1 px-3 py-2 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-sm text-[#e8e8f0] placeholder:text-[#6b7280] focus:outline-none focus:border-blue-500"
+                />
+                <button
+                  onClick={() => handleDeployAgent()}
+                  disabled={deploying || !situation.trim()}
+                  className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 disabled:bg-[#333] text-white text-sm font-semibold transition-colors flex-shrink-0"
+                >
+                  {deploying ? "..." : "Deploy"}
+                </button>
+              </div>
             </div>
           )}
 
-          <IncidentCard
-            incident={incident}
-            unitNumber="3B"
-            propertyName="Lemon Property"
-          />
+          {incident && (
+            <>
+              <IncidentCard
+                incident={incident}
+                unitNumber="3B"
+                propertyName="Lemon Property"
+              />
 
-          <EventTimeline events={incident.timeline} />
+              <CallTranscript
+                callLogs={callLogs}
+                quotes={incident.quotes}
+                incidentId={incident.id}
+                approvedVendorId={incident.selected_vendor_id}
+                onApprove={handleApprove}
+              />
 
-          {incident.quotes.length > 0 && (
-            <QuoteComparison
-              quotes={incident.quotes}
-              incidentId={incident.id}
-              approvedVendorId={incident.selected_vendor_id}
-              onApprove={handleApprove}
-            />
+              <EventTimeline events={incident.timeline} />
+            </>
           )}
 
-          <CallTranscript callLogs={useMock ? MOCK_CALL_LOGS : callLogs} />
+          {isLoading && !incident && incidentId && (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-3" />
+              <span className="text-sm text-[#6b7280]">Agent deploying...</span>
+            </div>
+          )}
         </main>
       </div>
     </div>
   );
 }
 
-// ─── Mock data for local dev before Supabase is wired ────────────────────────
-import type { CallLog, GeminiActivity } from "@/lib/types";
-
-const MOCK_CALL_LOGS: CallLog[] = [
-  {
-    id: "call-1",
-    incident_id: "mock-1234-5678-abcd",
-    direction: "inbound",
-    participant_type: "guest",
-    participant_name: "Ayush (Guest)",
-    participant_phone: "+13142990513",
-    twilio_call_sid: "CA000001",
-    duration_seconds: 142,
-    transcript:
-      "[Guest]: There's water EVERYWHERE. The bathroom is flooding!\n[Agent]: I understand, let me look into this immediately. Can you confirm the issue is under the sink?\n[Guest]: Yes, water is spraying from the pipes.\n[Agent]: I see a similar incident from October 2024. I'm calling plumbers now.",
-    summary: "Flooding in bathroom, possible PVC pipe failure",
-    sentiment: "angry",
-    status: "completed",
-    created_at: new Date(Date.now() - 8 * 60000).toISOString(),
-  },
-  {
-    id: "call-2",
-    incident_id: "mock-1234-5678-abcd",
-    direction: "outbound",
-    participant_type: "vendor",
-    participant_name: "Mike's Plumbing",
-    participant_phone: "+14085812962",
-    twilio_call_sid: "CA000002",
-    duration_seconds: 74,
-    transcript:
-      "[Agent]: Hi Mike, emergency pipe leak at 742 Evergreen Terrace, Unit 3B.\n[Vendor]: Yeah I know that place. PVC under the sink again?\n[Agent]: Likely. Quote and availability?\n[Vendor]: $300, Wednesday morning.",
-    summary: "$300 quote, available Wednesday AM",
-    sentiment: "positive",
-    status: "completed",
-    created_at: new Date(Date.now() - 4 * 60000).toISOString(),
-  },
-  {
-    id: "call-3",
-    incident_id: "mock-1234-5678-abcd",
-    direction: "outbound",
-    participant_type: "vendor",
-    participant_name: "Derek & Sons",
-    participant_phone: "+17654134446",
-    twilio_call_sid: "CA000003",
-    duration_seconds: 58,
-    transcript:
-      "[Agent]: Emergency plumbing at 742 Evergreen Terrace. Can you quote a PVC joint repair?\n[Vendor]: Earliest I can do is 5 days, $1000.\n[Agent]: Noted, thank you.",
-    summary: "$1,000 quote, 5 days out",
-    sentiment: "neutral",
-    status: "completed",
-    created_at: new Date(Date.now() - 2 * 60000).toISOString(),
-  },
-];
-
-const MOCK_GEMINI_ACTIVITY: GeminiActivity[] = [
-  {
-    id: "ga-1",
-    model: "gemini-2.5-flash-native-audio",
-    status: "done",
-    label: "Handled inbound guest call",
-    result: "Identified emergency pipe leak, extracted issue details",
-    timestamp: new Date(Date.now() - 8 * 60000).toISOString(),
-  },
-  {
-    id: "ga-2",
-    model: "gemini-embedding-2",
-    status: "done",
-    label: "Searched 5-year maintenance history",
-    result: "Found 3 similar records (Oct 2024, Jul 2022, Jan 2022)",
-    timestamp: new Date(Date.now() - 7 * 60000).toISOString(),
-  },
-  {
-    id: "ga-3",
-    model: "gemini-2.5-flash-native-audio",
-    status: "done",
-    label: "Parallel vendor calls (×2 simultaneous)",
-    result: "Mike: $300/2d · Derek: $1000/5d",
-    timestamp: new Date(Date.now() - 3 * 60000).toISOString(),
-  },
-  {
-    id: "ga-4",
-    model: "gemini-3.1-flash",
-    status: "active",
-    label: "Analyzing quotes for recommendation",
-    result: undefined,
-    timestamp: new Date(Date.now() - 1 * 60000).toISOString(),
-  },
-];
