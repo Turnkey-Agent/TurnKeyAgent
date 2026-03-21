@@ -3,8 +3,51 @@ import { GoogleGenAI } from "@google/genai";
 import { config } from "./config.js";
 import type { FunctionDeclaration } from "@google/genai";
 
-const supabase = createClient(config.supabaseUrl, config.supabaseServiceKey);
+export const supabase = createClient(config.supabaseUrl, config.supabaseServiceKey);
 const ai = new GoogleGenAI({ apiKey: config.geminiApiKey });
+
+// ── Dashboard Integration: write to gemini_activity + call_logs ──
+
+export async function logActivity(
+  incidentId: string | undefined,
+  label: string,
+  status: "active" | "done" | "error" = "active",
+  result?: string
+) {
+  try {
+    await supabase.from("gemini_activity").insert({
+      incident_id: incidentId || null,
+      label,
+      status,
+      result: result || null,
+      model: config.geminiLiveModel,
+    });
+  } catch (e) {
+    console.error("[logActivity]", e);
+  }
+}
+
+export async function logCallEvent(
+  incidentId: string | undefined,
+  direction: "inbound" | "outbound",
+  participantType: string,
+  participantPhone: string,
+  callSid?: string,
+  summary?: string
+) {
+  try {
+    await supabase.from("call_logs").insert({
+      incident_id: incidentId || null,
+      direction,
+      participant_type: participantType,
+      participant_phone: participantPhone,
+      twilio_call_sid: callSid || null,
+      summary: summary || null,
+    });
+  } catch (e) {
+    console.error("[logCallEvent]", e);
+  }
+}
 
 /**
  * Tool declarations registered with Gemini Live API.
@@ -237,9 +280,20 @@ async function logVendorQuote(args: Record<string, unknown>): Promise<unknown> {
 
   if (fetchError) throw fetchError;
 
+  // Fetch vendor metadata for dashboard display
+  const { data: vendor } = await supabase
+    .from("vendors")
+    .select("name, phone, rating, total_jobs")
+    .eq("id", args.vendor_id)
+    .single();
+
   const quotes = [...(incident.quotes || [])];
   quotes.push({
     vendor_id: args.vendor_id,
+    vendor_name: vendor?.name || "Unknown Vendor",
+    vendor_phone: vendor?.phone || "",
+    vendor_rating: vendor?.rating || null,
+    vendor_jobs_on_property: vendor?.total_jobs || 0,
     amount: args.amount,
     eta_days: args.eta_days,
     notes: args.notes || "",

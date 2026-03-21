@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { resolve } from "path";
 
-dotenv.config({ path: resolve(new URL(".", import.meta.url).pathname, "../../.env") });
+dotenv.config({ path: resolve(new URL(".", import.meta.url).pathname, "../../.env"), override: true });
 
 function required(name: string): string {
   const value = process.env[name];
@@ -14,7 +14,7 @@ function required(name: string): string {
 export const config = {
   // Gemini
   geminiApiKey: required("GEMINI_API_KEY"),
-  geminiLiveModel: "gemini-2.5-flash-preview-native-audio-dialog",
+  geminiLiveModel: "gemini-2.5-flash-native-audio-latest",
   geminiReasoningModel: "gemini-2.0-flash",
 
   // Twilio

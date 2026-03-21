@@ -12,8 +12,9 @@ import { CallTranscript } from "@/components/dashboard/CallTranscript";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import type { Incident } from "@/lib/types";
 
+const BRIDGE_URL = process.env.NEXT_PUBLIC_BRIDGE_URL || "http://localhost:3456";
+
 // ─── Hardcoded for demo: the latest open incident ─────────────────────────────
-// In production: fetch from Supabase, select from list, etc.
 const DEMO_INCIDENT_ID = process.env.NEXT_PUBLIC_DEMO_INCIDENT_ID ?? null;
 
 // Fallback mock for development before Supabase is wired up
@@ -104,6 +105,39 @@ export default function DashboardPage() {
   const dragStartX = useRef(0);
   const dragStartWidth = useRef(0);
 
+  // Workflow trigger form
+  const [situation, setSituation] = useState("");
+  const [deploying, setDeploying] = useState(false);
+  const [workflowActive, setWorkflowActive] = useState(false);
+
+  const handleDeployAgent = async () => {
+    if (!situation.trim()) return;
+    setDeploying(true);
+    try {
+      const res = await fetch(`${BRIDGE_URL}/workflow/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          situation,
+          guestPhone: "+13142990513",    // Ayush
+          vendor1Phone: "+12832328091",   // Chow
+          vendor2Phone: "+14085812962",   // Arnav
+          landlordPhone: "+17654134446",  // Ben
+        }),
+      });
+      const data = await res.json();
+      if (data.incidentId) {
+        setIncidentId(data.incidentId);
+        setUseMock(false);
+        setWorkflowActive(true);
+      }
+    } catch (err) {
+      console.error("Deploy failed:", err);
+    } finally {
+      setDeploying(false);
+    }
+  };
+
   const onDragStart = useCallback((e: React.MouseEvent) => {
     isDragging.current = true;
     dragStartX.current = e.clientX;
@@ -133,11 +167,30 @@ export default function DashboardPage() {
   // If no env var set, use mock data so dashboard renders immediately
   const incident = useMock ? MOCK_INCIDENT : liveIncident;
 
-  // Handle approval
+  // Handle approval — calls bridge to trigger scheduling call
   const handleApprove = async (vendorId: string) => {
     if (!incident) return;
 
-    const res = await fetch("/api/approve", {
+    // Find the vendor phone from the quote
+    const quote = incident.quotes.find((q: any) => q.vendor_id === vendorId);
+    const vendorPhone = quote?.vendor_phone || "";
+
+    // Call bridge workflow approve endpoint
+    try {
+      await fetch(`${BRIDGE_URL}/workflow/approve`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          incidentId: incident.id,
+          vendorPhone,
+        }),
+      });
+    } catch (err) {
+      console.error("Approval failed:", err);
+    }
+
+    // Also update via local API for Supabase
+    await fetch("/api/approve", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -146,11 +199,6 @@ export default function DashboardPage() {
         approved_by: "Ben (Landlord)",
       }),
     });
-
-    if (!res.ok) {
-      const err = await res.json();
-      console.error("Approval failed:", err);
-    }
   };
 
   if (!incident) {
@@ -224,6 +272,31 @@ export default function DashboardPage() {
 
         {/* Main content */}
         <main className="flex-1 p-6 flex flex-col gap-4">
+          {/* Workflow trigger — landlord types situation and deploys agent */}
+          {!workflowActive && !DEMO_INCIDENT_ID && (
+            <div className="rounded-xl border border-[#2a2a3a] bg-[#111118] p-6">
+              <h2 className="text-lg font-semibold text-[#e8e8f0] mb-2">Deploy Turnkey Agent</h2>
+              <p className="text-xs text-[#6b7280] mb-4">Describe the situation. The agent will call the guest, get vendor quotes, and present a recommendation.</p>
+              <textarea
+                value={situation}
+                onChange={(e) => setSituation(e.target.value)}
+                placeholder="Guest reported bathroom flooding from burst pipe under sink. Water spreading to hallway. Guest is upset and wants immediate resolution."
+                rows={3}
+                className="w-full p-3 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-sm text-[#e8e8f0] resize-none mb-3 focus:outline-none focus:border-blue-500"
+              />
+              <button
+                onClick={handleDeployAgent}
+                disabled={deploying || !situation.trim()}
+                className="px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-500 disabled:bg-[#333] text-white text-sm font-semibold transition-colors"
+              >
+                {deploying ? "Deploying..." : "Deploy Agent"}
+              </button>
+              <p className="text-[10px] text-[#6b7280] mt-2">
+                Calls: Ayush (guest) → Chow + Arnav (vendors) → You (approval)
+              </p>
+            </div>
+          )}
+
           <IncidentCard
             incident={incident}
             unitNumber="3B"

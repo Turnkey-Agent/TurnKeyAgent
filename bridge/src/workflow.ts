@@ -1,0 +1,289 @@
+import { config } from "./config.js";
+import { supabase, logActivity, logCallEvent } from "./tools.js";
+import { analyzeQuotes } from "./reasoning.js";
+
+interface WorkflowConfig {
+  situation: string;
+  guestPhone: string;
+  vendor1Phone: string;
+  vendor2Phone: string;
+  landlordPhone: string;
+  ngrokUrl: string;
+}
+
+interface WorkflowState {
+  id: string;
+  incidentId: string | null;
+  status: "guest_call" | "vendor_calls" | "pending_approval" | "scheduling" | "complete" | "error";
+  quotes: Array<{ vendorPhone: string; amount?: number; eta_days?: number; notes?: string }>;
+  selectedVendorPhone: string | null;
+  config: WorkflowConfig;
+}
+
+// Active workflows keyed by workflow ID
+const workflows = new Map<string, WorkflowState>();
+
+// Map incident_id → workflow_id for approval routing
+const incidentWorkflowMap = new Map<string, string>();
+
+/**
+ * Start the full demo workflow:
+ * 1. Call guest → confirm issue
+ * 2. Call vendor1 + vendor2 in parallel → get quotes
+ * 3. Present quotes on dashboard → wait for landlord approval
+ * 4. Call selected vendor → schedule repair
+ */
+export async function startWorkflow(cfg: WorkflowConfig): Promise<WorkflowState> {
+  const id = `wf_${Date.now()}`;
+  const state: WorkflowState = {
+    id,
+    incidentId: null,
+    status: "guest_call",
+    quotes: [],
+    selectedVendorPhone: null,
+    config: cfg,
+  };
+  workflows.set(id, state);
+
+  console.log(`[Workflow ${id}] Starting — situation: ${cfg.situation.slice(0, 80)}`);
+
+  // Create incident in DB immediately so dashboard shows it
+  const { data: incident } = await supabase
+    .from("incidents")
+    .insert({
+      property_id: await getPropertyId(),
+      category: "plumbing",
+      description: cfg.situation,
+      urgency: "emergency",
+      guest_phone: cfg.guestPhone,
+      status: "triaging",
+      timeline: [{
+        timestamp: new Date().toISOString(),
+        event: "workflow_started",
+        details: "Turnkey Agent deployed — calling guest to confirm issue",
+      }],
+    })
+    .select()
+    .single();
+
+  if (incident) {
+    state.incidentId = incident.id;
+    incidentWorkflowMap.set(incident.id, id);
+  }
+
+  await logActivity(state.incidentId!, "Calling guest to confirm issue", "active");
+
+  // Step 1: Call the guest
+  const callSid = await makeCall(cfg.guestPhone, "guest", cfg.situation, cfg.ngrokUrl);
+  if (callSid) {
+    await logCallEvent(state.incidentId!, "outbound", "guest", cfg.guestPhone, callSid, "Calling guest to confirm issue");
+
+    // Register callback for when guest call ends
+    registerCallEndCallback(callSid, () => onGuestCallEnd(id));
+  }
+
+  return state;
+}
+
+/**
+ * After guest call ends → call both vendors in parallel
+ */
+async function onGuestCallEnd(workflowId: string) {
+  const state = workflows.get(workflowId);
+  if (!state) return;
+
+  console.log(`[Workflow ${workflowId}] Guest call ended → calling vendors`);
+  state.status = "vendor_calls";
+
+  await logActivity(state.incidentId!, "Guest confirmed issue — dispatching vendors", "done");
+
+  // Update incident status
+  await supabase.from("incidents").update({
+    status: "quoting",
+    timeline: await appendTimeline(state.incidentId!, "Calling vendors for quotes"),
+  }).eq("id", state.incidentId!);
+
+  await logActivity(state.incidentId!, "Calling Vendor 1 for quote", "active");
+  await logActivity(state.incidentId!, "Calling Vendor 2 for quote", "active");
+
+  // Call both vendors in parallel
+  const [v1Sid, v2Sid] = await Promise.all([
+    makeCall(state.config.vendor1Phone, "vendor", state.config.situation, state.config.ngrokUrl),
+    makeCall(state.config.vendor2Phone, "vendor", state.config.situation, state.config.ngrokUrl),
+  ]);
+
+  if (v1Sid) {
+    await logCallEvent(state.incidentId!, "outbound", "vendor", state.config.vendor1Phone, v1Sid);
+    registerCallEndCallback(v1Sid, () => onVendorCallEnd(workflowId, state.config.vendor1Phone));
+  }
+  if (v2Sid) {
+    await logCallEvent(state.incidentId!, "outbound", "vendor", state.config.vendor2Phone, v2Sid);
+    registerCallEndCallback(v2Sid, () => onVendorCallEnd(workflowId, state.config.vendor2Phone));
+  }
+}
+
+/**
+ * After each vendor call ends → check if both done → present quotes
+ */
+let vendorCallsDone = 0;
+async function onVendorCallEnd(workflowId: string, vendorPhone: string) {
+  const state = workflows.get(workflowId);
+  if (!state) return;
+
+  vendorCallsDone++;
+  console.log(`[Workflow ${workflowId}] Vendor ${vendorPhone} call ended (${vendorCallsDone}/2)`);
+
+  await logActivity(state.incidentId!, `Vendor ${vendorPhone} quote received`, "done");
+
+  // Wait for both vendors
+  if (vendorCallsDone < 2) return;
+  vendorCallsDone = 0;
+
+  // Both vendors done → present quotes for approval
+  state.status = "pending_approval";
+
+  await supabase.from("incidents").update({
+    status: "pending_approval",
+    timeline: await appendTimeline(state.incidentId!, "Both vendor quotes received — awaiting landlord approval"),
+  }).eq("id", state.incidentId!);
+
+  await logActivity(state.incidentId!, "Quotes ready — awaiting landlord approval", "active");
+
+  console.log(`[Workflow ${workflowId}] Both quotes received — waiting for landlord approval on dashboard`);
+}
+
+/**
+ * Landlord approves a vendor from the dashboard
+ */
+export async function approveVendor(incidentId: string, vendorPhone: string): Promise<void> {
+  const workflowId = incidentWorkflowMap.get(incidentId);
+  if (!workflowId) {
+    console.error(`[Workflow] No workflow found for incident ${incidentId}`);
+    return;
+  }
+
+  const state = workflows.get(workflowId);
+  if (!state) return;
+
+  console.log(`[Workflow ${workflowId}] Vendor approved: ${vendorPhone} — scheduling`);
+  state.status = "scheduling";
+  state.selectedVendorPhone = vendorPhone;
+
+  await logActivity(state.incidentId!, "Landlord approved vendor — calling to schedule", "active");
+
+  await supabase.from("incidents").update({
+    status: "approved",
+    timeline: await appendTimeline(state.incidentId!, `Landlord approved vendor ${vendorPhone}`),
+  }).eq("id", state.incidentId!);
+
+  // Call the selected vendor back to schedule
+  const callSid = await makeCall(
+    vendorPhone,
+    "vendor_schedule",
+    state.config.situation,
+    state.config.ngrokUrl
+  );
+
+  if (callSid) {
+    await logCallEvent(state.incidentId!, "outbound", "vendor", vendorPhone, callSid, "Scheduling repair");
+    registerCallEndCallback(callSid, () => onScheduleCallEnd(workflowId));
+  }
+}
+
+async function onScheduleCallEnd(workflowId: string) {
+  const state = workflows.get(workflowId);
+  if (!state) return;
+
+  state.status = "complete";
+
+  await supabase.from("incidents").update({
+    status: "scheduled",
+    scheduled_at: new Date(Date.now() + 86400000).toISOString(), // tomorrow
+    timeline: await appendTimeline(state.incidentId!, "Repair scheduled — vendor confirmed for tomorrow morning"),
+  }).eq("id", state.incidentId!);
+
+  await logActivity(state.incidentId!, "Repair scheduled — workflow complete", "done");
+  console.log(`[Workflow ${workflowId}] COMPLETE`);
+}
+
+// ── Helpers ──
+
+const callEndCallbacks = new Map<string, () => void>();
+
+export function registerCallEndCallback(callSid: string, cb: () => void) {
+  callEndCallbacks.set(callSid, cb);
+}
+
+export function triggerCallEnd(callSid: string) {
+  const cb = callEndCallbacks.get(callSid);
+  if (cb) {
+    callEndCallbacks.delete(callSid);
+    cb();
+  }
+}
+
+async function makeCall(to: string, type: string, situation: string, ngrokUrl: string): Promise<string | null> {
+  const authHeader = Buffer.from(`${config.twilioAccountSid}:${config.twilioAuthToken}`).toString("base64");
+  const webhookUrl = `${ngrokUrl}/twilio/voice/outbound`;
+
+  // Store call context so twilio-handler knows the prompt
+  const { SYSTEM_PROMPTS } = await import("./gemini-session.js");
+  let systemPrompt: string;
+  switch (type) {
+    case "vendor":
+      systemPrompt = SYSTEM_PROMPTS.vendorOutbound(situation);
+      break;
+    case "vendor_schedule":
+      systemPrompt = SYSTEM_PROMPTS.vendorSchedule(situation);
+      break;
+    default:
+      systemPrompt = SYSTEM_PROMPTS.guestOutbound(situation);
+  }
+
+  // Store in the shared context map (imported from twilio-handler)
+  const { storeCallContext } = await import("./twilio-handler.js");
+
+  try {
+    const res = await fetch(
+      `https://api.twilio.com/2010-04-01/Accounts/${config.twilioAccountSid}/Calls.json`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${authHeader}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({ To: to, From: config.twilioPhoneNumber, Url: webhookUrl }),
+      }
+    );
+    const data = await res.json();
+    if (data.sid) {
+      storeCallContext(data.sid, systemPrompt, type);
+      console.log(`[Workflow] Call ${type} → ${to}: ${data.sid}`);
+      return data.sid;
+    } else {
+      console.error(`[Workflow] Call failed:`, data.message);
+      return null;
+    }
+  } catch (err) {
+    console.error(`[Workflow] Call error:`, err);
+    return null;
+  }
+}
+
+async function getPropertyId(): Promise<string> {
+  const { data } = await supabase.from("properties").select("id").limit(1).single();
+  return data?.id || "00000000-0000-0000-0000-000000000000";
+}
+
+async function appendTimeline(incidentId: string, details: string) {
+  const { data } = await supabase.from("incidents").select("timeline").eq("id", incidentId).single();
+  const timeline = [...(data?.timeline || [])];
+  timeline.push({ timestamp: new Date().toISOString(), event: "workflow_step", details });
+  return timeline;
+}
+
+export function getWorkflow(id: string) { return workflows.get(id); }
+export function getWorkflowByIncident(incidentId: string) {
+  const wfId = incidentWorkflowMap.get(incidentId);
+  return wfId ? workflows.get(wfId) : undefined;
+}
