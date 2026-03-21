@@ -1,0 +1,253 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 820" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+    <linearGradient id="vercelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#000000"/>
+      <stop offset="100%" style="stop-color:#1a1a1a"/>
+    </linearGradient>
+    <linearGradient id="voiceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4285f4"/>
+      <stop offset="100%" style="stop-color:#2b5ea7"/>
+    </linearGradient>
+    <linearGradient id="reasonGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ea4335"/>
+      <stop offset="100%" style="stop-color:#b31412"/>
+    </linearGradient>
+    <linearGradient id="knowledgeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#34a853"/>
+      <stop offset="100%" style="stop-color:#1e7e34"/>
+    </linearGradient>
+    <linearGradient id="schedGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbc04"/>
+      <stop offset="100%" style="stop-color:#c79400"/>
+    </linearGradient>
+    <linearGradient id="twilioGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f22f46"/>
+      <stop offset="100%" style="stop-color:#c7192e"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+    <filter id="glowBlue">
+      <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#4285f4" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1100" height="820" rx="12" fill="#0d1117"/>
+
+  <!-- Title Bar -->
+  <rect x="0" y="0" width="1100" height="60" rx="12" fill="url(#headerGrad)"/>
+  <rect x="0" y="40" width="1100" height="20" fill="url(#headerGrad)"/>
+  <text x="550" y="38" text-anchor="middle" fill="#fff" font-size="22" font-weight="700" letter-spacing="2">TURNKEY AGENT — System Architecture</text>
+
+  <!-- ═══════════ PHONE / USERS (Left Column) ═══════════ -->
+
+  <!-- Guest Phone -->
+  <rect x="30" y="290" width="120" height="60" rx="10" fill="#2d2d3d" stroke="#6c6c8a" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="90" y="316" text-anchor="middle" fill="#e8e8e8" font-size="12" font-weight="600">Guest</text>
+  <text x="90" y="334" text-anchor="middle" fill="#8b8ba0" font-size="10">Phone Call</text>
+
+  <!-- Plumber 1 Phone -->
+  <rect x="30" y="370" width="120" height="60" rx="10" fill="#2d2d3d" stroke="#6c6c8a" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="90" y="396" text-anchor="middle" fill="#e8e8e8" font-size="12" font-weight="600">Plumber 1</text>
+  <text x="90" y="414" text-anchor="middle" fill="#8b8ba0" font-size="10">Phone Call</text>
+
+  <!-- Plumber 2 Phone -->
+  <rect x="30" y="450" width="120" height="60" rx="10" fill="#2d2d3d" stroke="#6c6c8a" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="90" y="476" text-anchor="middle" fill="#e8e8e8" font-size="12" font-weight="600">Plumber 2</text>
+  <text x="90" y="494" text-anchor="middle" fill="#8b8ba0" font-size="10">Phone Call</text>
+
+  <!-- Landlord Phone -->
+  <rect x="30" y="530" width="120" height="60" rx="10" fill="#2d2d3d" stroke="#6c6c8a" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="90" y="556" text-anchor="middle" fill="#e8e8e8" font-size="12" font-weight="600">Landlord</text>
+  <text x="90" y="574" text-anchor="middle" fill="#8b8ba0" font-size="10">Phone Call</text>
+
+  <!-- Arrows: Phones → Twilio -->
+  <line x1="150" y1="320" x2="195" y2="370" stroke="#f22f46" stroke-width="2" stroke-dasharray="6,3" opacity="0.7"/>
+  <line x1="150" y1="400" x2="195" y2="400" stroke="#f22f46" stroke-width="2" stroke-dasharray="6,3" opacity="0.7"/>
+  <line x1="150" y1="480" x2="195" y2="430" stroke="#f22f46" stroke-width="2" stroke-dasharray="6,3" opacity="0.7"/>
+  <line x1="150" y1="560" x2="195" y2="450" stroke="#f22f46" stroke-width="2" stroke-dasharray="6,3" opacity="0.7"/>
+
+  <!-- ═══════════ TWILIO (Telephony) ═══════════ -->
+  <rect x="195" y="330" width="140" height="140" rx="12" fill="url(#twilioGrad)" filter="url(#shadow)"/>
+  <text x="265" y="370" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">Twilio</text>
+  <text x="265" y="390" text-anchor="middle" fill="#ffc8cf" font-size="10">Voice + Media</text>
+  <text x="265" y="405" text-anchor="middle" fill="#ffc8cf" font-size="10">Streams</text>
+  <line x1="215" y1="415" x2="315" y2="415" stroke="#fff" stroke-width="0.5" opacity="0.3"/>
+  <text x="265" y="435" text-anchor="middle" fill="#ffd5da" font-size="9">PSTN ↔ WebSocket</text>
+  <text x="265" y="450" text-anchor="middle" fill="#ffd5da" font-size="9">μ-law 8kHz audio</text>
+
+  <!-- Arrow: Twilio → Voice Engine -->
+  <line x1="335" y1="400" x2="385" y2="400" stroke="#f22f46" stroke-width="2.5" marker-end="url(#arrowRed)"/>
+  <text x="360" y="390" text-anchor="middle" fill="#f77" font-size="8">WebSocket</text>
+
+  <!-- ═══════════ VOICE ENGINE ═══════════ -->
+  <rect x="385" y="290" width="200" height="230" rx="14" fill="url(#voiceGrad)" filter="url(#shadow)"/>
+  <text x="485" y="320" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">Voice Engine</text>
+  <line x1="405" y1="332" x2="565" y2="332" stroke="#fff" stroke-width="0.5" opacity="0.3"/>
+
+  <!-- Bridge sub-box -->
+  <rect x="400" y="342" width="170" height="40" rx="6" fill="rgba(255,255,255,0.12)"/>
+  <text x="485" y="360" text-anchor="middle" fill="#d4e4ff" font-size="11" font-weight="600">WebSocket Bridge</text>
+  <text x="485" y="375" text-anchor="middle" fill="#a0c4ff" font-size="9">FastAPI / Node.js</text>
+
+  <!-- Gemini Live sub-box -->
+  <rect x="400" y="392" width="170" height="50" rx="6" fill="rgba(255,255,255,0.12)"/>
+  <text x="485" y="412" text-anchor="middle" fill="#d4e4ff" font-size="11" font-weight="600">Gemini Live API</text>
+  <text x="485" y="428" text-anchor="middle" fill="#a0c4ff" font-size="9">2.5 Flash Native Audio</text>
+
+  <!-- Audio resampling note -->
+  <rect x="400" y="452" width="170" height="30" rx="6" fill="rgba(255,255,255,0.12)"/>
+  <text x="485" y="472" text-anchor="middle" fill="#a0c4ff" font-size="9">Audio: μ-law 8k ↔ PCM 16k</text>
+
+  <!-- Function calling label -->
+  <text x="485" y="505" text-anchor="middle" fill="#7ab3ff" font-size="9" font-style="italic">Function Calling ↕</text>
+
+  <!-- ═══════════ VERCEL DASHBOARD (Top) ═══════════ -->
+  <rect x="280" y="80" width="540" height="170" rx="14" fill="url(#vercelGrad)" stroke="#333" stroke-width="1" filter="url(#shadow)"/>
+
+  <!-- Vercel triangle logo (simplified) -->
+  <polygon points="300,105 310,90 320,105" fill="#fff"/>
+  <text x="335" y="103" fill="#fff" font-size="14" font-weight="700">Vercel Dashboard</text>
+  <text x="335" y="118" fill="#888" font-size="10">Next.js 15 + AI SDK 6</text>
+
+  <!-- Dashboard sub-boxes -->
+  <rect x="300" y="130" width="120" height="50" rx="6" fill="#1e1e2e" stroke="#444" stroke-width="0.5"/>
+  <text x="360" y="150" text-anchor="middle" fill="#e8e8e8" font-size="10" font-weight="600">Real-time</text>
+  <text x="360" y="165" text-anchor="middle" fill="#888" font-size="9">Incident Cards</text>
+
+  <rect x="435" y="130" width="120" height="50" rx="6" fill="#1e1e2e" stroke="#444" stroke-width="0.5"/>
+  <text x="495" y="150" text-anchor="middle" fill="#e8e8e8" font-size="10" font-weight="600">Quote Compare</text>
+  <text x="495" y="165" text-anchor="middle" fill="#888" font-size="9">AI Recommendation</text>
+
+  <rect x="570" y="130" width="120" height="50" rx="6" fill="#1e1e2e" stroke="#444" stroke-width="0.5"/>
+  <text x="630" y="150" text-anchor="middle" fill="#e8e8e8" font-size="10" font-weight="600">Timeline</text>
+  <text x="630" y="165" text-anchor="middle" fill="#888" font-size="9">Audit Log</text>
+
+  <!-- Workflow DevKit box inside dashboard -->
+  <rect x="300" y="195" width="500" height="40" rx="6" fill="#111122" stroke="#4285f4" stroke-width="0.8"/>
+  <text x="550" y="215" text-anchor="middle" fill="#7ab3ff" font-size="11" font-weight="600">Vercel AI SDK 6 + Workflow DevKit (DurableAgent)</text>
+  <text x="550" y="228" text-anchor="middle" fill="#5588bb" font-size="9">Orchestrator Agent  •  Parallel Call Spawner  •  Durable Steps</text>
+
+  <!-- Auth badge -->
+  <rect x="710" y="130" width="90" height="50" rx="6" fill="#1e1e2e" stroke="#fbbc04" stroke-width="1"/>
+  <text x="755" y="150" text-anchor="middle" fill="#fbbc04" font-size="10" font-weight="600">BetterAuth</text>
+  <text x="755" y="165" text-anchor="middle" fill="#888" font-size="9">Login / RLS</text>
+
+  <!-- Arrow: Dashboard → Voice Engine -->
+  <line x1="485" y1="250" x2="485" y2="290" stroke="#4285f4" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <text x="510" y="275" fill="#5588bb" font-size="8">WebSocket / SSE</text>
+
+  <!-- ═══════════ REASONING ENGINE ═══════════ -->
+  <rect x="640" y="310" width="190" height="190" rx="14" fill="url(#reasonGrad)" filter="url(#shadow)"/>
+  <text x="735" y="340" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">Reasoning</text>
+  <line x1="660" y1="352" x2="810" y2="352" stroke="#fff" stroke-width="0.5" opacity="0.3"/>
+
+  <rect x="655" y="362" width="160" height="35" rx="6" fill="rgba(255,255,255,0.12)"/>
+  <text x="735" y="380" text-anchor="middle" fill="#ffd4d0" font-size="11" font-weight="600">Gemini 3.1 Flash</text>
+  <text x="735" y="393" text-anchor="middle" fill="#ffb0a8" font-size="9">Decision Engine</text>
+
+  <text x="735" y="420" text-anchor="middle" fill="#ffc8c4" font-size="10">• Compare quotes</text>
+  <text x="735" y="438" text-anchor="middle" fill="#ffc8c4" font-size="10">• Recommend vendor</text>
+  <text x="735" y="456" text-anchor="middle" fill="#ffc8c4" font-size="10">• Assess urgency</text>
+  <text x="735" y="474" text-anchor="middle" fill="#ffc8c4" font-size="10">• Analyze history</text>
+
+  <!-- Arrow: Voice → Reasoning -->
+  <line x1="585" y1="380" x2="640" y2="380" stroke="#ccc" stroke-width="1.5" stroke-dasharray="5,3"/>
+
+  <!-- ═══════════ KNOWLEDGE BASE ═══════════ -->
+  <rect x="640" y="540" width="190" height="210" rx="14" fill="url(#knowledgeGrad)" filter="url(#shadow)"/>
+  <text x="735" y="570" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">Knowledge</text>
+  <line x1="660" y1="580" x2="810" y2="580" stroke="#fff" stroke-width="0.5" opacity="0.3"/>
+
+  <!-- Supabase sub-box -->
+  <rect x="655" y="590" width="160" height="35" rx="6" fill="rgba(255,255,255,0.12)"/>
+  <text x="735" y="608" text-anchor="middle" fill="#c8f0d0" font-size="11" font-weight="600">Supabase</text>
+  <text x="735" y="621" text-anchor="middle" fill="#90d8a0" font-size="9">Postgres + pgvector</text>
+
+  <text x="735" y="648" text-anchor="middle" fill="#b8e8c0" font-size="10">• Properties</text>
+  <text x="735" y="666" text-anchor="middle" fill="#b8e8c0" font-size="10">• Maintenance history</text>
+  <text x="735" y="684" text-anchor="middle" fill="#b8e8c0" font-size="10">• Vendor codes</text>
+  <text x="735" y="702" text-anchor="middle" fill="#b8e8c0" font-size="10">• Call logs</text>
+  <text x="735" y="720" text-anchor="middle" fill="#b8e8c0" font-size="10">• Embeddings (3072d)</text>
+
+  <!-- Embedding badge -->
+  <rect x="660" y="730" width="150" height="10" rx="3" fill="rgba(255,255,255,0.1)"/>
+  <text x="735" y="738" text-anchor="middle" fill="#70c878" font-size="7">Gemini Embedding 2</text>
+
+  <!-- Arrow: Voice → Knowledge -->
+  <line x1="485" y1="520" x2="485" y2="620" stroke="#ccc" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="485" y1="620" x2="640" y2="640" stroke="#34a853" stroke-width="2" marker-end="url(#arrowGreen)"/>
+  <text x="540" y="612" fill="#5a5" font-size="8">Vector Search</text>
+
+  <!-- Arrow: Knowledge → Dashboard (Realtime) -->
+  <line x1="735" y1="540" x2="735" y2="250" stroke="#34a853" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>
+  <text x="762" y="505" fill="#5a5" font-size="8" transform="rotate(-90, 762, 505)">Supabase Realtime</text>
+
+  <!-- ═══════════ SCHEDULING ═══════════ -->
+  <rect x="890" y="400" width="170" height="120" rx="14" fill="url(#schedGrad)" filter="url(#shadow)"/>
+  <text x="975" y="435" text-anchor="middle" fill="#1a1a1a" font-size="15" font-weight="700">Scheduling</text>
+  <line x1="910" y1="445" x2="1040" y2="445" stroke="#1a1a1a" stroke-width="0.5" opacity="0.3"/>
+
+  <rect x="905" y="455" width="140" height="30" rx="6" fill="rgba(0,0,0,0.12)"/>
+  <text x="975" y="475" text-anchor="middle" fill="#3a3000" font-size="11" font-weight="600">Google Calendar API</text>
+
+  <text x="975" y="505" text-anchor="middle" fill="#4a3a00" font-size="9">Service Account</text>
+
+  <!-- Arrow: Reasoning → Scheduling -->
+  <line x1="830" y1="420" x2="890" y2="450" stroke="#fbbc04" stroke-width="2" marker-end="url(#arrowYellow)"/>
+
+  <!-- ═══════════ FLOW LABELS ═══════════ -->
+
+  <!-- Inbound flow -->
+  <rect x="30" y="665" width="260" height="130" rx="10" fill="#111827" stroke="#333" stroke-width="1"/>
+  <text x="160" y="690" text-anchor="middle" fill="#7ab3ff" font-size="12" font-weight="700">Workflow Steps</text>
+  <line x1="50" y1="700" x2="270" y2="700" stroke="#333" stroke-width="0.5"/>
+  <text x="55" y="720" fill="#4285f4" font-size="10">1.</text>
+  <text x="70" y="720" fill="#aaa" font-size="10">Guest Emergency (inbound)</text>
+  <text x="55" y="738" fill="#ea4335" font-size="10">2.</text>
+  <text x="70" y="738" fill="#aaa" font-size="10">Parallel Vendor Calls (outbound)</text>
+  <text x="55" y="756" fill="#fbbc04" font-size="10">3.</text>
+  <text x="70" y="756" fill="#aaa" font-size="10">AI Recommendation + Approval</text>
+  <text x="55" y="774" fill="#34a853" font-size="10">4.</text>
+  <text x="70" y="774" fill="#aaa" font-size="10">Schedule + Door Code + Resolve</text>
+
+  <!-- Tech badges -->
+  <rect x="340" y="665" width="130" height="30" rx="6" fill="#1e1e2e" stroke="#4285f4" stroke-width="1"/>
+  <text x="405" y="685" text-anchor="middle" fill="#4285f4" font-size="10" font-weight="600">Gemini Live Audio</text>
+
+  <rect x="485" y="665" width="100" height="30" rx="6" fill="#1e1e2e" stroke="#ea4335" stroke-width="1"/>
+  <text x="535" y="685" text-anchor="middle" fill="#ea4335" font-size="10" font-weight="600">Gemini Flash</text>
+
+  <rect x="600" y="665" width="110" height="30" rx="6" fill="#1e1e2e" stroke="#34a853" stroke-width="1"/>
+  <text x="655" y="685" text-anchor="middle" fill="#34a853" font-size="10" font-weight="600">Embedding 2</text>
+
+  <rect x="725" y="665" width="80" height="30" rx="6" fill="#1e1e2e" stroke="#fbbc04" stroke-width="1"/>
+  <text x="765" y="685" text-anchor="middle" fill="#fbbc04" font-size="10" font-weight="600">TTS</text>
+
+  <rect x="820" y="665" width="110" height="30" rx="6" fill="#1e1e2e" stroke="#f22f46" stroke-width="1"/>
+  <text x="875" y="685" text-anchor="middle" fill="#f22f46" font-size="10" font-weight="600">Twilio PSTN</text>
+
+  <rect x="945" y="665" width="120" height="30" rx="6" fill="#1e1e2e" stroke="#fff" stroke-width="0.8"/>
+  <text x="1005" y="685" text-anchor="middle" fill="#ccc" font-size="10" font-weight="600">Vercel + Supabase</text>
+
+  <!-- Arrows markers -->
+  <defs>
+    <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#4285f4"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#f22f46"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#34a853"/>
+    </marker>
+    <marker id="arrowYellow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fbbc04"/>
+    </marker>
+  </defs>
+</svg>
