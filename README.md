@@ -116,12 +116,12 @@ See the full [architecture diagram](docs/architecture-diagram.svg) and [detailed
 
 ## Team
 
-| Workstream | Name |
+| Role | Name |
 |---|---|
-| **Voice Engine** (Product Lead / Architect) | Ben Shyong ([@Bshyong158](https://github.com/Bshyong158)) |
+| **Product Lead / Voice Engineer** | Ben Shyong ([@Bshyong158](https://github.com/Bshyong158)) |
 | **Data Layer** | Ayush Ojha ([@ayushozha](https://github.com/ayushozha)) |
-| **Dashboard + Landlord UX** | Suet Ling Chow ([@lingchowc](https://github.com/lingchowc)) |
-| **Orchestration + Glue** | Arnav Dewan ([@arnxv0](https://github.com/arnxv0)) |
+| **Frontend** | TBD |
+| **Orchestration** | TBD |
 
 Built for the Vercel x Google DeepMind Hackathon, March 2026.
 
