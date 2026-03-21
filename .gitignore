@@ -33,3 +33,6 @@ bridge/dist/
 
 # Backup files
 *.yolo.bak
+
+# Datasets (seed data - do not commit)
+datasets/
