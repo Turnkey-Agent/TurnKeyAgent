@@ -76,7 +76,7 @@ export async function startWorkflow(cfg: WorkflowConfig): Promise<WorkflowState>
   await logActivity(state.incidentId!, "Calling guest to confirm issue", "active");
 
   // Step 1: Call the guest
-  const callSid = await makeCall(cfg.guestPhone, "guest", cfg.situation, cfg.ngrokUrl);
+  const callSid = await makeCall(cfg.guestPhone, "guest", cfg.situation, cfg.ngrokUrl, state.incidentId || undefined, id);
   if (callSid) {
     await logCallEvent(state.incidentId!, "outbound", "guest", cfg.guestPhone, callSid, "Calling guest to confirm issue");
 
@@ -108,7 +108,7 @@ async function onGuestCallEnd(workflowId: string) {
   await logActivity(state.incidentId!, "Calling Vendor 1 for quote", "active");
 
   // Call vendors SEQUENTIALLY — vendor 1 first, then vendor 2 after vendor 1 ends
-  const v1Sid = await makeCall(state.config.vendor1Phone, "vendor", state.config.situation, state.config.ngrokUrl);
+  const v1Sid = await makeCall(state.config.vendor1Phone, "vendor", state.config.situation, state.config.ngrokUrl, state.incidentId || undefined, workflowId);
 
   if (v1Sid) {
     await logCallEvent(state.incidentId!, "outbound", "vendor", state.config.vendor1Phone, v1Sid);
@@ -131,7 +131,7 @@ async function onVendorCallEnd(workflowId: string, vendorPhone: string) {
   // After vendor 1 → call vendor 2
   if (state.vendorCallsDone === 1) {
     await logActivity(state.incidentId!, "Calling Vendor 2 for quote", "active");
-    const v2Sid = await makeCall(state.config.vendor2Phone, "vendor", state.config.situation, state.config.ngrokUrl);
+    const v2Sid = await makeCall(state.config.vendor2Phone, "vendor", state.config.situation, state.config.ngrokUrl, state.incidentId || undefined, workflowId);
     if (v2Sid) {
       await logCallEvent(state.incidentId!, "outbound", "vendor", state.config.vendor2Phone, v2Sid);
       registerCallEndCallback(v2Sid, () => onVendorCallEnd(workflowId, state.config.vendor2Phone));
@@ -177,11 +177,14 @@ export async function approveVendor(incidentId: string, vendorPhone: string): Pr
   }).eq("id", state.incidentId!);
 
   // Call the selected vendor back to schedule
+  const wfId = incidentWorkflowMap.get(incidentId);
   const callSid = await makeCall(
     vendorPhone,
     "vendor_schedule",
     state.config.situation,
-    state.config.ngrokUrl
+    state.config.ngrokUrl,
+    state.incidentId || undefined,
+    wfId
   );
 
   if (callSid) {
@@ -222,7 +225,15 @@ export function triggerCallEnd(callSid: string) {
   }
 }
 
-async function makeCall(to: string, type: string, situation: string, ngrokUrl: string): Promise<string | null> {
+// Map callSid → workflow for incident lookups
+const callSidWorkflowMap = new Map<string, string>();
+
+export function getWorkflowByCallSid(callSid: string) {
+  const wfId = callSidWorkflowMap.get(callSid);
+  return wfId ? workflows.get(wfId) : undefined;
+}
+
+async function makeCall(to: string, type: string, situation: string, ngrokUrl: string, incidentId?: string, workflowId?: string): Promise<string | null> {
   const authHeader = Buffer.from(`${config.twilioAccountSid}:${config.twilioAuthToken}`).toString("base64");
   const webhookUrl = `${ngrokUrl}/twilio/voice/outbound`;
 
@@ -257,7 +268,8 @@ async function makeCall(to: string, type: string, situation: string, ngrokUrl: s
     );
     const data = await res.json();
     if (data.sid) {
-      storeCallContext(data.sid, systemPrompt, type);
+      storeCallContext(data.sid, systemPrompt, type, incidentId);
+      if (workflowId) callSidWorkflowMap.set(data.sid, workflowId);
       console.log(`[Workflow] Call ${type} → ${to}: ${data.sid}`);
       return data.sid;
     } else {

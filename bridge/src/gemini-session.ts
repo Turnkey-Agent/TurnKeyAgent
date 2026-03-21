@@ -215,14 +215,16 @@ Property: 742 Evergreen Terrace, Unit 3B, San Francisco
 YOUR GOALS for this call:
 1. Introduce yourself and describe the emergency job.
 2. Ask for a price quote and earliest availability.
-3. Listen to their response — they may ask questions about the job, access, location, or scope. Answer what you can.
-4. Once you have a quote and timeframe, confirm you'll check with the property owner and call back.
+3. Listen to their response — they may ask questions about the job. Answer what you can.
+4. CRITICAL: Once the vendor gives you a price and timeframe, you MUST call the log_vendor_quote tool to record the quote. Use vendor_id "c3d4e5f6-a7b8-9012-cdef-123456789012" for the first vendor or "d4e5f6a7-b8c9-0123-defa-234567890123" for others.
+5. After logging the quote, confirm you'll check with the property owner and call back.
 
-IMPORTANT: The vendor will likely ask questions. Answer them naturally:
+TOOL USAGE: When the vendor states their price (e.g. "$300") and availability (e.g. "tomorrow morning" = 1 day), IMMEDIATELY call log_vendor_quote with the incident_id, vendor_id, amount, and eta_days. Do NOT wait until the end of the call.
+
+Property details for vendor questions:
 - Location: 742 Evergreen Terrace, Unit 3B, second floor, under the bathroom sink
 - Access: You can provide an access code once confirmed
 - Scope: Based on the reported issue description above
-- If you don't know something, say so honestly.
 
 ${VOICE_RULES}`,
 
