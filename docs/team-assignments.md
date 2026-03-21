@@ -6,7 +6,7 @@
 
 ## Team Roles
 
-### Person 1: BEN — Product Lead + Landlord Role-Player
+### Ben Shyong ([@Bshyong158](https://github.com/Bshyong158)) — Product Lead + Architect + Landlord Role-Player
 - Owns the demo script and presentation narrative
 - Seeds the 5-year maintenance history data
 - Generates property photos (Google Imagen or stock)
@@ -14,7 +14,7 @@
 - Role-plays the landlord during demo
 - Handles Supabase schema setup and BetterAuth config
 
-### Person 2: VOICE ENGINEER — Twilio ↔ Gemini Live Bridge
+### Ayush Ojha ([@ayushozha](https://github.com/ayushozha)) — Voice Engineer — Twilio ↔ Gemini Live Bridge
 - Sets up Twilio account with 1 phone number
 - Builds the WebSocket bridge (Python FastAPI recommended)
 - Implements audio resampling (Twilio μ-law 8kHz ↔ Gemini 16kHz PCM)
@@ -50,8 +50,8 @@
 
 | Workstream | Owner | Priority | Notes |
 |---|---|---|---|
-| **Voice Engine** | Person 2 | Highest — start first | Must have working phone call by 10:30 AM |
-| **Data Layer** | Person 1 | Foundation | Schema + seed data + embeddings — everyone plugs into this |
+| **Voice Engine** | Ayush | Highest — start first | Must have working phone call by 10:30 AM |
+| **Data Layer** | Ben | Foundation | Schema + seed data + embeddings — everyone plugs into this |
 | **Dashboard** | Person 3 | High | Real-time UI is the human verification layer |
 | **Orchestration** | Person 4 | Integrator | Connects voice → database → dashboard |
 
