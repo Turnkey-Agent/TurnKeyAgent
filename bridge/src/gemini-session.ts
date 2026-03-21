@@ -6,8 +6,11 @@ const ai = new GoogleGenAI({ apiKey: config.geminiApiKey });
 
 export interface GeminiSessionOptions {
   systemPrompt: string;
+  incidentId?: string;
+  callType?: string;
   onAudio: (base64Pcm: string) => void;
   onText?: (text: string) => void;
+  onCallEnd?: () => void;
   onError?: (error: Error) => void;
   onClose?: () => void;
 }
@@ -16,7 +19,7 @@ export class GeminiLiveSession {
   private session: Session | null = null;
   private options: GeminiSessionOptions;
   private retryCount = 0;
-  private maxRetries = 3;
+  private maxRetries = 2;
   private closed = false;
 
   constructor(options: GeminiSessionOptions) {
@@ -36,19 +39,12 @@ export class GeminiLiveSession {
             },
           },
           tools: [{ functionDeclarations: toolDeclarations }],
-          // Latency optimizations
-          generationConfig: {
-            temperature: 0.9,
-            maxOutputTokens: 200,
-            thinkingConfig: { thinkingBudget: 0 },
-          },
+          // Reduce pauses: aggressive VAD so Gemini responds faster
           realtimeInputConfig: {
             automaticActivityDetection: {
               disabled: false,
-              startOfSpeechSensitivity: "START_OF_SPEECH_SENSITIVITY_HIGH",
-              endOfSpeechSensitivity: "END_OF_SPEECH_SENSITIVITY_HIGH",
               prefixPaddingMs: 20,
-              silenceDurationMs: 100,
+              silenceDurationMs: 300,
             },
           },
         },
@@ -59,73 +55,83 @@ export class GeminiLiveSession {
           },
           onmessage: (msg: LiveServerMessage) => this.handleMessage(msg),
           onerror: (err: ErrorEvent) => {
-            console.error("[Gemini] Session error:", err.message);
+            console.error("[Gemini] Error:", err.message);
             this.options.onError?.(new Error(err.message));
           },
           onclose: (ev: CloseEvent) => {
-            console.log("[Gemini] Session closed:", ev.reason);
+            console.log("[Gemini] Closed:", ev.reason?.slice(0, 100));
             if (!this.closed && this.retryCount < this.maxRetries) {
               this.retryCount++;
-              console.log(
-                `[Gemini] Reconnecting (attempt ${this.retryCount}/${this.maxRetries})...`
-              );
+              console.log(`[Gemini] Reconnecting (${this.retryCount}/${this.maxRetries})...`);
               setTimeout(() => this.connect(), 1000 * this.retryCount);
             } else {
               this.options.onClose?.();
+              this.options.onCallEnd?.();
             }
           },
         },
       });
     } catch (err) {
-      console.error("[Gemini] Failed to connect:", err);
+      console.error("[Gemini] Connect failed:", err);
       throw err;
     }
   }
 
   private async handleMessage(msg: LiveServerMessage): Promise<void> {
-    // Handle audio responses — forward immediately for lowest latency
     const parts = msg.serverContent?.modelTurn?.parts;
     if (parts) {
       for (const part of parts) {
         if (part.inlineData?.data) {
+          console.log(`[Audio] Gemini → ${part.inlineData.data.length} b64 chars, mime: ${part.inlineData.mimeType || "unset"}`);
           this.options.onAudio(part.inlineData.data);
         }
         if (part.text) {
           this.options.onText?.(part.text);
         }
       }
+    } else if (msg.serverContent) {
+      // Log what we're getting if no modelTurn parts
+      const keys = Object.keys(msg.serverContent);
+      if (keys.length > 0 && !msg.serverContent.turnComplete) {
+        console.log(`[Gemini] serverContent keys: ${keys.join(", ")}`);
+      }
     }
 
-    // Handle function calls — run in parallel for speed
     const toolCall = msg.toolCall;
     if (toolCall?.functionCalls) {
       const responses = await Promise.all(
         toolCall.functionCalls.map(async (fc) => {
-          console.log(`[Gemini] Tool: ${fc.name}(${JSON.stringify(fc.args)})`);
+          console.log(`[Tool] ${fc.name}(${JSON.stringify(fc.args).slice(0, 100)})`);
           try {
             const result = await handleToolCall(fc.name, fc.args as Record<string, unknown>);
-            console.log(`[Gemini] Tool OK: ${fc.name}`);
             return { id: fc.id, name: fc.name, response: { result } };
           } catch (err) {
-            console.error(`[Gemini] Tool ERR: ${fc.name}:`, err);
+            console.error(`[Tool ERR] ${fc.name}:`, err);
             return { id: fc.id, name: fc.name, response: { error: String(err) } };
           }
         })
       );
-
       if (this.session) {
         this.session.sendToolResponse({ functionResponses: responses });
       }
     }
   }
 
+  /** Rewire audio output — used by pre-warming to attach to the actual WebSocket */
+  setAudioHandler(handler: (base64Pcm: string) => void): void {
+    this.options.onAudio = handler;
+  }
+
+  /** Send a text message to Gemini to trigger a response (used to kick off speech) */
+  sendText(text: string): void {
+    if (!this.session) return;
+    this.session.sendClientContent({ turns: [{ role: "user", parts: [{ text }] }], turnComplete: true });
+  }
+
   sendAudio(base64Pcm: string): void {
     if (!this.session) return;
     this.session.sendRealtimeInput({
-      audio: {
-        data: base64Pcm,
-        mimeType: "audio/pcm;rate=8000",
-      },
+      audio: { data: base64Pcm, mimeType: "audio/pcm;rate=8000" },
     });
   }
 
@@ -138,48 +144,67 @@ export class GeminiLiveSession {
   }
 }
 
-/**
- * System prompts — kept SHORT to reduce first-response latency.
- * Property: 123 Lemon Drive, San Francisco
- */
+// ──────────────────────────────────────────────────────────────
+// SYSTEM PROMPTS — 742 Evergreen Terrace (matches seed data)
+// ──────────────────────────────────────────────────────────────
+const VOICE_RULES = `CRITICAL RULES:
+- Start speaking IMMEDIATELY when connected. Do NOT wait for "hello."
+- Max 2 sentences per turn. This is a fast phone call.
+- NEVER go silent. If thinking, say "One moment..." or "Let me pull that up..." or "Bear with me..."
+- Be warm but fast. No filler greetings.`;
+
 export const SYSTEM_PROMPTS = {
   guestOutbound: (situation: string) =>
-    `You are Turnkey Agent, AI property manager for 123 Lemon Drive, San Francisco. You are CALLING a guest about a reported issue.
+    `You are Turnkey Agent, AI property manager for Lemon Property at 742 Evergreen Terrace, San Francisco. You are calling a guest who reported an issue.
 
-Situation: ${situation}
+Reported situation: ${situation}
 
-Be empathetic and professional. Confirm the issue details, ask clarifying questions (exact location, severity, when it started), reassure them help is coming. Keep responses SHORT — this is a phone call.
+YOUR SCRIPT (under 60 seconds total):
+1. IMMEDIATELY say: "Hi, this is Turnkey Agent calling from Lemon Property. I'm calling about the issue you reported."
+2. Confirm: "Can you tell me — is the water still actively flowing?" (or appropriate question)
+3. After they respond, reassure: "Got it. I'm dispatching vendors right now. I'll call you back once a vendor is confirmed with an ETA."
+4. End: "Hang tight, we're on it." Then stop talking.
 
-Tools: search_maintenance_history, create_incident, update_incident_status.`,
-
-  guestInbound: `You are Turnkey Agent, AI property manager for 123 Lemon Drive, San Francisco. A guest is calling with a maintenance issue.
-
-Be calm, empathetic, brief. Ask what's wrong, clarify details, search history, create incident, reassure help is coming. Keep responses SHORT.
-
-Tools: search_maintenance_history, create_incident, update_incident_status.`,
+${VOICE_RULES}`,
 
   vendorOutbound: (situation: string) =>
-    `You are Turnkey Agent calling a vendor for 123 Lemon Drive, San Francisco.
+    `You are Turnkey Agent calling a plumbing vendor about an emergency job.
 
 Issue: ${situation}
 
-Be direct and efficient. Describe the emergency, mention relevant history, get a quote (cost + ETA). Keep it brief.
+YOUR SCRIPT (under 45 seconds):
+1. IMMEDIATELY: "Hi, this is Turnkey Agent. I have an emergency plumbing job at 742 Evergreen Terrace, Unit 3B. Burst pipe under the bathroom sink, actively flooding."
+2. Ask: "Can you give me a quote and your earliest availability?"
+3. After they quote: "Got it — I'll confirm with the property owner and call you right back."
+4. End the call.
 
-Tools: log_vendor_quote, update_incident_status.`,
+${VOICE_RULES}`,
 
   landlordOutbound: (situation: string, quotes: string) =>
-    `You are Turnkey Agent calling the property owner about 123 Lemon Drive, San Francisco.
+    `You are Turnkey Agent calling Ben, the property owner, about an emergency at Lemon Property, 742 Evergreen Terrace.
 
 Issue: ${situation}
-Quotes: ${quotes}
+Vendor quotes: ${quotes}
 
-Present issue summary, both quotes side-by-side, your recommendation, ask for approval. Be concise.
+YOUR SCRIPT (under 45 seconds):
+1. IMMEDIATELY: "Hi Ben, Turnkey Agent here. We have an emergency at Lemon Property — burst pipe, bathroom flooding in Unit 3B."
+2. Present: "I got two vendor quotes." Then read each quote.
+3. Recommend: "I recommend the more cost-effective option based on price and availability."
+4. Ask: "Should I go ahead and schedule them?"
+5. After approval: "Done. I'll confirm with the vendor and update the guest."
 
-Tools: update_incident_status, schedule_repair.`,
+${VOICE_RULES}`,
 
-  vendorAccess: `You are Turnkey Agent. A vendor is calling for property access at 123 Lemon Drive.
+  vendorSchedule: (situation: string) =>
+    `You are Turnkey Agent calling a vendor back to confirm and schedule a repair.
 
-Verify caller is a scheduled vendor, then give vendor access code. Never give guest code. Be brief.
+Issue: ${situation}
 
-Tools: get_vendor_access_code, update_incident_status.`,
+YOUR SCRIPT (under 30 seconds):
+1. IMMEDIATELY: "Hi, this is Turnkey Agent again. The property owner approved your quote for 742 Evergreen Terrace."
+2. Schedule: "Can we confirm you for tomorrow morning?"
+3. After confirmation: "Perfect. The vendor access code is 4729. Unit 3B, second floor, under the bathroom sink."
+4. End: "Thanks, we'll see you then."
+
+${VOICE_RULES}`,
 };

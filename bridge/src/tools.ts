@@ -2,16 +2,52 @@ import { createClient } from "@supabase/supabase-js";
 import { GoogleGenAI } from "@google/genai";
 import { config } from "./config.js";
 import type { FunctionDeclaration } from "@google/genai";
-import {
-  generateIncidentImage,
-  generateDraftInvoice,
-  finalizeInvoice,
-  embedResolvedIncident,
-  logGeminiActivity,
-} from "./realtime-hooks.js";
 
-const supabase = createClient(config.supabaseUrl, config.supabaseServiceKey);
+export const supabase = createClient(config.supabaseUrl, config.supabaseServiceKey);
 const ai = new GoogleGenAI({ apiKey: config.geminiApiKey });
+
+// ── Dashboard Integration: write to gemini_activity + call_logs ──
+
+export async function logActivity(
+  incidentId: string | undefined,
+  label: string,
+  status: "active" | "done" | "error" = "active",
+  result?: string
+) {
+  try {
+    await supabase.from("gemini_activity").insert({
+      incident_id: incidentId || null,
+      label,
+      status,
+      result: result || null,
+      model: config.geminiLiveModel,
+    });
+  } catch (e) {
+    console.error("[logActivity]", e);
+  }
+}
+
+export async function logCallEvent(
+  incidentId: string | undefined,
+  direction: "inbound" | "outbound",
+  participantType: string,
+  participantPhone: string,
+  callSid?: string,
+  summary?: string
+) {
+  try {
+    await supabase.from("call_logs").insert({
+      incident_id: incidentId || null,
+      direction,
+      participant_type: participantType,
+      participant_phone: participantPhone,
+      twilio_call_sid: callSid || null,
+      summary: summary || null,
+    });
+  } catch (e) {
+    console.error("[logCallEvent]", e);
+  }
+}
 
 /**
  * Tool declarations registered with Gemini Live API.
@@ -176,7 +212,7 @@ async function searchMaintenanceHistory(
 ): Promise<unknown> {
   // Generate embedding for the query
   const embeddingResult = await ai.models.embedContent({
-    model: "gemini-embedding-2-preview",
+    model: "gemini-embedding-exp-03-07",
     contents: query,
     config: { taskType: "RETRIEVAL_QUERY" },
   });
@@ -195,9 +231,6 @@ async function searchMaintenanceHistory(
   });
 
   if (error) throw error;
-
-  // Note: no incidentId available here, but we can log to console
-  console.log(`[search] Found ${data?.length || 0} similar issues for query: "${query.slice(0, 50)}..."`);
 
   return {
     results: data || [],
@@ -234,23 +267,6 @@ async function createIncident(
     .single();
 
   if (error) throw error;
-
-  // Fire-and-forget: generate contextual image + log activity
-  // These run async — dashboard updates in real-time as they complete
-  generateIncidentImage(
-    data.id,
-    args.category as string,
-    args.description as string
-  ).catch((err) => console.error("[hooks] image gen error:", err));
-
-  logGeminiActivity(
-    data.id,
-    "gemini-2.5-flash-native-audio",
-    "Incident created from guest call",
-    "completed",
-    `Category: ${args.category}, Urgency: ${args.urgency}`
-  ).catch(() => {});
-
   return { incident_id: data.id, status: "created", message: "Incident created successfully" };
 }
 
@@ -264,9 +280,20 @@ async function logVendorQuote(args: Record<string, unknown>): Promise<unknown> {
 
   if (fetchError) throw fetchError;
 
+  // Fetch vendor metadata for dashboard display
+  const { data: vendor } = await supabase
+    .from("vendors")
+    .select("name, phone, rating, total_jobs")
+    .eq("id", args.vendor_id)
+    .single();
+
   const quotes = [...(incident.quotes || [])];
   quotes.push({
     vendor_id: args.vendor_id,
+    vendor_name: vendor?.name || "Unknown Vendor",
+    vendor_phone: vendor?.phone || "",
+    vendor_rating: vendor?.rating || null,
+    vendor_jobs_on_property: vendor?.total_jobs || 0,
     amount: args.amount,
     eta_days: args.eta_days,
     notes: args.notes || "",
@@ -286,23 +313,6 @@ async function logVendorQuote(args: Record<string, unknown>): Promise<unknown> {
     .eq("id", args.incident_id);
 
   if (updateError) throw updateError;
-
-  // Fire-and-forget: generate draft invoice for this quote
-  generateDraftInvoice(
-    args.incident_id as string,
-    args.vendor_id as string,
-    args.amount as number,
-    args.notes as string || ""
-  ).catch((err) => console.error("[hooks] invoice gen error:", err));
-
-  logGeminiActivity(
-    args.incident_id as string,
-    "gemini-2.5-flash-native-audio",
-    `Quote received: $${args.amount}`,
-    "completed",
-    `${args.eta_days} day ETA`
-  ).catch(() => {});
-
   return { success: true, quote_count: quotes.length };
 }
 
@@ -391,26 +401,5 @@ async function updateIncidentStatus(
     .eq("id", incidentId);
 
   if (error) throw error;
-
-  // Fire-and-forget: trigger hooks based on status change
-  if (status === "approved") {
-    finalizeInvoice(incidentId).catch((err) =>
-      console.error("[hooks] invoice finalize error:", err)
-    );
-  }
-
-  if (status === "resolved") {
-    embedResolvedIncident(incidentId).catch((err) =>
-      console.error("[hooks] embed resolved error:", err)
-    );
-  }
-
-  logGeminiActivity(
-    incidentId,
-    "system",
-    `Status → ${status}`,
-    "completed"
-  ).catch(() => {});
-
   return { success: true, status };
 }
