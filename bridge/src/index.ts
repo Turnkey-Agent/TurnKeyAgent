@@ -7,11 +7,21 @@ import {
   handleOutboundCall,
   handleMediaStream,
   getActiveCalls,
+  initiateCall,
 } from "./twilio-handler.js";
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+
+// CORS for dashboard
+app.use((_req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  if (_req.method === "OPTIONS") { res.sendStatus(200); return; }
+  next();
+});
 
 // Health check
 app.get("/", (_req, res) => {
@@ -27,24 +37,18 @@ app.get("/", (_req, res) => {
 app.post("/twilio/voice", handleIncomingCall);
 app.post("/twilio/voice/outbound", handleOutboundCall);
 
-// Active calls status
-app.get("/calls", (_req, res) => {
-  res.json(getActiveCalls());
-});
+// Dashboard endpoints
+app.get("/calls", (_req, res) => res.json(getActiveCalls()));
+app.post("/initiate-call", initiateCall);
 
-// Create HTTP server and WebSocket server on same port
+// HTTP + WebSocket server
 const server = createServer(app);
 const wss = new WebSocketServer({ noServer: true });
 
-// Handle WebSocket upgrades for Twilio Media Streams
 server.on("upgrade", (request, socket, head) => {
-  const pathname = new URL(request.url || "/", `http://${request.headers.host}`)
-    .pathname;
-
+  const pathname = new URL(request.url || "/", `http://${request.headers.host}`).pathname;
   if (pathname === "/twilio/media-stream") {
-    wss.handleUpgrade(request, socket, head, (ws) => {
-      handleMediaStream(ws);
-    });
+    wss.handleUpgrade(request, socket, head, (ws) => handleMediaStream(ws));
   } else {
     socket.destroy();
   }
@@ -52,18 +56,10 @@ server.on("upgrade", (request, socket, head) => {
 
 server.listen(config.port, () => {
   console.log(`
-╔══════════════════════════════════════════════════╗
-║         TURNKEY AGENT — VOICE BRIDGE             ║
-╠══════════════════════════════════════════════════╣
-║  Server:    http://localhost:${config.port}                ║
-║  Phone:     ${config.twilioPhoneNumber.padEnd(35)}║
-║  Gemini:    ${config.geminiLiveModel.slice(0, 35).padEnd(35)}║
-║  WebSocket: ws://localhost:${config.port}/twilio/media-stream ║
-╚══════════════════════════════════════════════════╝
-
-Next steps:
-  1. Run: ngrok http ${config.port}
-  2. Run: npx tsx ../scripts/setup-twilio.ts <ngrok-url>
-  3. Call ${config.twilioPhoneNumber} to test!
+  TURNKEY AGENT — VOICE BRIDGE
+  Server:    http://localhost:${config.port}
+  Phone:     ${config.twilioPhoneNumber}
+  Gemini:    ${config.geminiLiveModel}
+  Tunnel:    ${config.ngrokUrl || "(not set)"}
 `);
 });

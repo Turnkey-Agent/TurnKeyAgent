@@ -118,13 +118,13 @@ export function bufferToPcm(buf: Buffer): Int16Array {
 }
 
 /**
- * Full pipeline: Twilio base64 μ-law → Gemini-ready base64 PCM 16kHz
+ * Full pipeline: Twilio base64 μ-law → Gemini-ready base64 PCM 8kHz
+ * OPTIMIZATION: Send 8kHz directly — Gemini accepts audio/pcm;rate=8000
  */
 export function twilioToGemini(base64Mulaw: string): string {
   const mulawBuf = Buffer.from(base64Mulaw, "base64");
   const pcm8k = decodeMulaw(mulawBuf);
-  const pcm16k = resample(pcm8k, 8000, 16000);
-  const buf = pcmToBuffer(pcm16k);
+  const buf = pcmToBuffer(pcm8k);
   return buf.toString("base64");
 }
 

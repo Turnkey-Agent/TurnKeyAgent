@@ -36,6 +36,21 @@ export class GeminiLiveSession {
             },
           },
           tools: [{ functionDeclarations: toolDeclarations }],
+          // Latency optimizations
+          generationConfig: {
+            temperature: 0.9,
+            maxOutputTokens: 200,
+            thinkingConfig: { thinkingBudget: 0 },
+          },
+          realtimeInputConfig: {
+            automaticActivityDetection: {
+              disabled: false,
+              startOfSpeechSensitivity: "START_OF_SPEECH_SENSITIVITY_HIGH",
+              endOfSpeechSensitivity: "END_OF_SPEECH_SENSITIVITY_HIGH",
+              prefixPaddingMs: 20,
+              silenceDurationMs: 100,
+            },
+          },
         },
         callbacks: {
           onopen: () => {
@@ -68,7 +83,7 @@ export class GeminiLiveSession {
   }
 
   private async handleMessage(msg: LiveServerMessage): Promise<void> {
-    // Handle audio responses
+    // Handle audio responses — forward immediately for lowest latency
     const parts = msg.serverContent?.modelTurn?.parts;
     if (parts) {
       for (const part of parts) {
@@ -81,48 +96,35 @@ export class GeminiLiveSession {
       }
     }
 
-    // Handle function calls
+    // Handle function calls — run in parallel for speed
     const toolCall = msg.toolCall;
     if (toolCall?.functionCalls) {
-      const responses = [];
-      for (const fc of toolCall.functionCalls) {
-        console.log(`[Gemini] Tool call: ${fc.name}(${JSON.stringify(fc.args)})`);
-        try {
-          const result = await handleToolCall(fc.name, fc.args as Record<string, unknown>);
-          responses.push({
-            id: fc.id,
-            name: fc.name,
-            response: { result },
-          });
-          console.log(`[Gemini] Tool result for ${fc.name}:`, JSON.stringify(result).slice(0, 200));
-        } catch (err) {
-          console.error(`[Gemini] Tool error for ${fc.name}:`, err);
-          responses.push({
-            id: fc.id,
-            name: fc.name,
-            response: { error: String(err) },
-          });
-        }
-      }
+      const responses = await Promise.all(
+        toolCall.functionCalls.map(async (fc) => {
+          console.log(`[Gemini] Tool: ${fc.name}(${JSON.stringify(fc.args)})`);
+          try {
+            const result = await handleToolCall(fc.name, fc.args as Record<string, unknown>);
+            console.log(`[Gemini] Tool OK: ${fc.name}`);
+            return { id: fc.id, name: fc.name, response: { result } };
+          } catch (err) {
+            console.error(`[Gemini] Tool ERR: ${fc.name}:`, err);
+            return { id: fc.id, name: fc.name, response: { error: String(err) } };
+          }
+        })
+      );
 
-      // Send tool responses back to Gemini
       if (this.session) {
-        this.session.sendToolResponse({
-          functionResponses: responses,
-        });
+        this.session.sendToolResponse({ functionResponses: responses });
       }
     }
   }
 
-  /**
-   * Send audio data to Gemini (base64 PCM 16kHz)
-   */
   sendAudio(base64Pcm: string): void {
     if (!this.session) return;
     this.session.sendRealtimeInput({
       audio: {
         data: base64Pcm,
-        mimeType: "audio/pcm;rate=16000",
+        mimeType: "audio/pcm;rate=8000",
       },
     });
   }
@@ -137,52 +139,47 @@ export class GeminiLiveSession {
 }
 
 /**
- * System prompts for different call scenarios
+ * System prompts — kept SHORT to reduce first-response latency.
+ * Property: 123 Lemon Drive, San Francisco
  */
 export const SYSTEM_PROMPTS = {
-  guestInbound: `You are the Turnkey Agent, an AI property management assistant for Lemon Property at 742 Evergreen Terrace, San Francisco.
+  guestOutbound: (situation: string) =>
+    `You are Turnkey Agent, AI property manager for 123 Lemon Drive, San Francisco. You are CALLING a guest about a reported issue.
 
-You are receiving an inbound call from a guest. Be calm, empathetic, and professional.
+Situation: ${situation}
 
-Your job:
-1. Listen to the guest's maintenance issue
-2. Ask clarifying questions (location, severity, when it started)
-3. Search the maintenance history for similar past issues
-4. Reassure the guest that help is being dispatched
-5. Create an incident in the system
+Be empathetic and professional. Confirm the issue details, ask clarifying questions (exact location, severity, when it started), reassure them help is coming. Keep responses SHORT — this is a phone call.
 
-Personality: Warm but efficient. Acknowledge frustration. Never be defensive. Use the guest's name if available.
+Tools: search_maintenance_history, create_incident, update_incident_status.`,
 
-You have access to these tools: search_maintenance_history, create_incident, update_incident_status.`,
+  guestInbound: `You are Turnkey Agent, AI property manager for 123 Lemon Drive, San Francisco. A guest is calling with a maintenance issue.
 
-  vendorOutbound: `You are the Turnkey Agent calling a vendor on behalf of Lemon Property at 742 Evergreen Terrace, San Francisco.
+Be calm, empathetic, brief. Ask what's wrong, clarify details, search history, create incident, reassure help is coming. Keep responses SHORT.
 
-Be professional, efficient, and direct. Your goal:
-1. Describe the emergency maintenance issue
-2. Mention any relevant history (e.g. "this unit had a similar issue before")
-3. Get a quote (cost and time estimate)
-4. Log the quote
+Tools: search_maintenance_history, create_incident, update_incident_status.`,
 
-Personality: Business-like, respectful of the vendor's time.
+  vendorOutbound: (situation: string) =>
+    `You are Turnkey Agent calling a vendor for 123 Lemon Drive, San Francisco.
 
-You have access to these tools: log_vendor_quote, update_incident_status.`,
+Issue: ${situation}
 
-  landlordOutbound: `You are the Turnkey Agent calling the property owner about a maintenance emergency at Lemon Property, 742 Evergreen Terrace, San Francisco.
+Be direct and efficient. Describe the emergency, mention relevant history, get a quote (cost + ETA). Keep it brief.
 
-Be concise and data-driven. Present:
-1. The issue summary
-2. Both vendor quotes side by side
-3. Your recommendation with reasoning
-4. Ask for approval
+Tools: log_vendor_quote, update_incident_status.`,
 
-Personality: Concise, respects the owner's time, presents clear data.
+  landlordOutbound: (situation: string, quotes: string) =>
+    `You are Turnkey Agent calling the property owner about 123 Lemon Drive, San Francisco.
 
-You have access to these tools: update_incident_status, schedule_repair.`,
+Issue: ${situation}
+Quotes: ${quotes}
 
-  vendorAccess: `You are the Turnkey Agent. A vendor is calling for property access.
+Present issue summary, both quotes side-by-side, your recommendation, ask for approval. Be concise.
 
-Verify the caller is a scheduled vendor, then provide the vendor access code.
-Never give out the guest access code.
+Tools: update_incident_status, schedule_repair.`,
 
-You have access to these tools: get_vendor_access_code, update_incident_status.`,
+  vendorAccess: `You are Turnkey Agent. A vendor is calling for property access at 123 Lemon Drive.
+
+Verify caller is a scheduled vendor, then give vendor access code. Never give guest code. Be brief.
+
+Tools: get_vendor_access_code, update_incident_status.`,
 };
