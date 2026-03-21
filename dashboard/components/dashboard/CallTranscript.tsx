@@ -377,11 +377,29 @@ export function CallTranscript({
 
   // ── Live transcript handlers ────────────────────────────────────────────────
 
-  const handleSend = () => {
+  const [liveLoading, setLiveLoading] = useState(false);
+
+  const handleSend = async () => {
     const text = ownerInput.trim();
     if (!text) return;
     setOwnerMessages((prev) => [...prev, { text, timestamp: new Date().toISOString() }]);
     setOwnerInput("");
+    setLiveLoading(true);
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text, incidentId }),
+      });
+      const data = await res.json();
+      if (data.reply) {
+        setOwnerMessages((prev) => [...prev, { text: `Agent: ${data.reply}`, timestamp: new Date().toISOString() }]);
+      }
+    } catch {
+      setOwnerMessages((prev) => [...prev, { text: "Agent: Sorry, I couldn't connect to the database.", timestamp: new Date().toISOString() }]);
+    } finally {
+      setLiveLoading(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
