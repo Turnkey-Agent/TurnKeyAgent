@@ -1,9 +1,12 @@
 /**
  * Audio utilities for Twilio ↔ Gemini Live API bridge
  *
- * Twilio sends: μ-law (G.711) 8kHz mono, base64 encoded
- * Gemini expects: PCM 16-bit LE, 16kHz mono
- * Gemini returns: PCM 16-bit LE, 24kHz mono
+ * Twilio sends/receives: μ-law (G.711) 8kHz mono, base64 encoded
+ * Gemini accepts: PCM 16-bit LE at 8kHz/16kHz/24kHz
+ * Gemini returns: PCM 16-bit LE 24kHz
+ *
+ * Input path:  μ-law decode → PCM 16-bit 8kHz (no resample, Gemini handles 8kHz natively)
+ * Output path: PCM 24kHz → downsample 8kHz → μ-law encode
  */
 
 // μ-law decompression table (ITU-T G.711)
@@ -44,20 +47,9 @@ function encodeMulawSample(sample: number): number {
 }
 
 /**
- * Decode μ-law bytes to PCM 16-bit samples
- */
-export function decodeMulaw(mulawData: Buffer): Int16Array {
-  const pcm = new Int16Array(mulawData.length);
-  for (let i = 0; i < mulawData.length; i++) {
-    pcm[i] = MULAW_DECODE_TABLE[mulawData[i]];
-  }
-  return pcm;
-}
-
-/**
  * Encode PCM 16-bit samples to μ-law bytes
  */
-export function encodeMulaw(pcmData: Int16Array): Buffer {
+function encodeMulaw(pcmData: Int16Array): Buffer {
   const mulaw = Buffer.alloc(pcmData.length);
   for (let i = 0; i < pcmData.length; i++) {
     mulaw[i] = encodeMulawSample(pcmData[i]);
@@ -66,50 +58,9 @@ export function encodeMulaw(pcmData: Int16Array): Buffer {
 }
 
 /**
- * Linear resample between sample rates.
- * Good enough for voice — no anti-aliasing filter needed at hackathon quality.
- */
-export function resample(
-  input: Int16Array,
-  fromRate: number,
-  toRate: number
-): Int16Array {
-  if (fromRate === toRate) return input;
-
-  const ratio = fromRate / toRate;
-  const outputLength = Math.floor(input.length / ratio);
-  const output = new Int16Array(outputLength);
-
-  for (let i = 0; i < outputLength; i++) {
-    const srcIdx = i * ratio;
-    const idx = Math.floor(srcIdx);
-    const frac = srcIdx - idx;
-
-    if (idx + 1 < input.length) {
-      output[i] = Math.round(input[idx] * (1 - frac) + input[idx + 1] * frac);
-    } else {
-      output[i] = input[idx] ?? 0;
-    }
-  }
-
-  return output;
-}
-
-/**
- * Convert PCM Int16Array to Buffer (little-endian)
- */
-export function pcmToBuffer(pcm: Int16Array): Buffer {
-  const buf = Buffer.alloc(pcm.length * 2);
-  for (let i = 0; i < pcm.length; i++) {
-    buf.writeInt16LE(pcm[i], i * 2);
-  }
-  return buf;
-}
-
-/**
  * Convert Buffer (little-endian PCM) to Int16Array
  */
-export function bufferToPcm(buf: Buffer): Int16Array {
+function bufferToPcm(buf: Buffer): Int16Array {
   const pcm = new Int16Array(buf.length / 2);
   for (let i = 0; i < pcm.length; i++) {
     pcm[i] = buf.readInt16LE(i * 2);
@@ -118,24 +69,66 @@ export function bufferToPcm(buf: Buffer): Int16Array {
 }
 
 /**
- * Full pipeline: Twilio base64 μ-law 8kHz → Gemini-ready base64 PCM 16kHz
- * Resample to 16kHz for best quality with Gemini native audio
+ * Downsample with simple low-pass averaging to prevent aliasing.
+ * For 24kHz → 8kHz (3:1 ratio), average every 3 samples.
+ */
+function downsample(input: Int16Array, fromRate: number, toRate: number): Int16Array {
+  if (fromRate === toRate) return input;
+  const ratio = fromRate / toRate;
+  const outputLength = Math.floor(input.length / ratio);
+  const output = new Int16Array(outputLength);
+
+  for (let i = 0; i < outputLength; i++) {
+    const start = Math.floor(i * ratio);
+    const end = Math.min(Math.floor((i + 1) * ratio), input.length);
+    let sum = 0;
+    for (let j = start; j < end; j++) {
+      sum += input[j];
+    }
+    output[i] = Math.round(sum / (end - start));
+  }
+  return output;
+}
+
+/**
+ * Decode μ-law bytes to PCM 16-bit samples
+ */
+function decodeMulaw(mulawData: Buffer): Int16Array {
+  const pcm = new Int16Array(mulawData.length);
+  for (let i = 0; i < mulawData.length; i++) {
+    pcm[i] = MULAW_DECODE_TABLE[mulawData[i]];
+  }
+  return pcm;
+}
+
+/**
+ * Convert PCM Int16Array to Buffer (little-endian)
+ */
+function pcmToBuffer(pcm: Int16Array): Buffer {
+  const buf = Buffer.alloc(pcm.length * 2);
+  for (let i = 0; i < pcm.length; i++) {
+    buf.writeInt16LE(pcm[i], i * 2);
+  }
+  return buf;
+}
+
+/**
+ * Twilio → Gemini: μ-law 8kHz → PCM 16-bit 8kHz (no resample)
+ * Gemini Live API accepts PCM at 8kHz natively.
  */
 export function twilioToGemini(base64Mulaw: string): string {
   const mulawBuf = Buffer.from(base64Mulaw, "base64");
   const pcm8k = decodeMulaw(mulawBuf);
-  const pcm16k = resample(pcm8k, 8000, 16000);
-  const buf = pcmToBuffer(pcm16k);
-  return buf.toString("base64");
+  return pcmToBuffer(pcm8k).toString("base64");
 }
 
 /**
- * Full pipeline: Gemini base64 PCM 24kHz → Twilio base64 μ-law 8kHz
+ * Gemini → Twilio: PCM 24kHz 16-bit LE → downsample to 8kHz → encode μ-law → base64
  */
 export function geminiToTwilio(base64Pcm: string): string {
   const pcmBuf = Buffer.from(base64Pcm, "base64");
   const pcm24k = bufferToPcm(pcmBuf);
-  const pcm8k = resample(pcm24k, 24000, 8000);
+  const pcm8k = downsample(pcm24k, 24000, 8000);
   const mulaw = encodeMulaw(pcm8k);
   return mulaw.toString("base64");
 }

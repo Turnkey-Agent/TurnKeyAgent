@@ -104,40 +104,38 @@ async function onGuestCallEnd(workflowId: string) {
   }).eq("id", state.incidentId!);
 
   await logActivity(state.incidentId!, "Calling Vendor 1 for quote", "active");
-  await logActivity(state.incidentId!, "Calling Vendor 2 for quote", "active");
 
-  // Call both vendors in parallel
-  const [v1Sid, v2Sid] = await Promise.all([
-    makeCall(state.config.vendor1Phone, "vendor", state.config.situation, state.config.ngrokUrl),
-    makeCall(state.config.vendor2Phone, "vendor", state.config.situation, state.config.ngrokUrl),
-  ]);
+  // Call vendors SEQUENTIALLY — vendor 1 first, then vendor 2 after vendor 1 ends
+  const v1Sid = await makeCall(state.config.vendor1Phone, "vendor", state.config.situation, state.config.ngrokUrl);
 
   if (v1Sid) {
     await logCallEvent(state.incidentId!, "outbound", "vendor", state.config.vendor1Phone, v1Sid);
     registerCallEndCallback(v1Sid, () => onVendorCallEnd(workflowId, state.config.vendor1Phone));
   }
-  if (v2Sid) {
-    await logCallEvent(state.incidentId!, "outbound", "vendor", state.config.vendor2Phone, v2Sid);
-    registerCallEndCallback(v2Sid, () => onVendorCallEnd(workflowId, state.config.vendor2Phone));
-  }
 }
 
 /**
- * After each vendor call ends → check if both done → present quotes
+ * After vendor call ends → if vendor 1 done, call vendor 2. If both done, present quotes.
  */
-let vendorCallsDone = 0;
 async function onVendorCallEnd(workflowId: string, vendorPhone: string) {
   const state = workflows.get(workflowId);
   if (!state) return;
 
-  vendorCallsDone++;
-  console.log(`[Workflow ${workflowId}] Vendor ${vendorPhone} call ended (${vendorCallsDone}/2)`);
+  state.vendorCallsDone++;
+  console.log(`[Workflow ${workflowId}] Vendor ${vendorPhone} call ended (${state.vendorCallsDone}/2)`);
 
   await logActivity(state.incidentId!, `Vendor ${vendorPhone} quote received`, "done");
 
-  // Wait for both vendors
-  if (vendorCallsDone < 2) return;
-  vendorCallsDone = 0;
+  // After vendor 1 → call vendor 2
+  if (state.vendorCallsDone === 1) {
+    await logActivity(state.incidentId!, "Calling Vendor 2 for quote", "active");
+    const v2Sid = await makeCall(state.config.vendor2Phone, "vendor", state.config.situation, state.config.ngrokUrl);
+    if (v2Sid) {
+      await logCallEvent(state.incidentId!, "outbound", "vendor", state.config.vendor2Phone, v2Sid);
+      registerCallEndCallback(v2Sid, () => onVendorCallEnd(workflowId, state.config.vendor2Phone));
+    }
+    return;
+  }
 
   // Both vendors done → present quotes for approval
   state.status = "pending_approval";

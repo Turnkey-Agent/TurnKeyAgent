@@ -39,6 +39,14 @@ export class GeminiLiveSession {
             },
           },
           tools: [{ functionDeclarations: toolDeclarations }],
+          // Reduce pauses: aggressive VAD so Gemini responds faster
+          realtimeInputConfig: {
+            automaticActivityDetection: {
+              disabled: false,
+              prefixPaddingMs: 20,
+              silenceDurationMs: 300,
+            },
+          },
         },
         callbacks: {
           onopen: () => {
@@ -74,11 +82,18 @@ export class GeminiLiveSession {
     if (parts) {
       for (const part of parts) {
         if (part.inlineData?.data) {
+          console.log(`[Audio] Gemini → ${part.inlineData.data.length} b64 chars, mime: ${part.inlineData.mimeType || "unset"}`);
           this.options.onAudio(part.inlineData.data);
         }
         if (part.text) {
           this.options.onText?.(part.text);
         }
+      }
+    } else if (msg.serverContent) {
+      // Log what we're getting if no modelTurn parts
+      const keys = Object.keys(msg.serverContent);
+      if (keys.length > 0 && !msg.serverContent.turnComplete) {
+        console.log(`[Gemini] serverContent keys: ${keys.join(", ")}`);
       }
     }
 
@@ -102,10 +117,21 @@ export class GeminiLiveSession {
     }
   }
 
+  /** Rewire audio output — used by pre-warming to attach to the actual WebSocket */
+  setAudioHandler(handler: (base64Pcm: string) => void): void {
+    this.options.onAudio = handler;
+  }
+
+  /** Send a text message to Gemini to trigger a response (used to kick off speech) */
+  sendText(text: string): void {
+    if (!this.session) return;
+    this.session.sendClientContent({ turns: [{ role: "user", parts: [{ text }] }], turnComplete: true });
+  }
+
   sendAudio(base64Pcm: string): void {
     if (!this.session) return;
     this.session.sendRealtimeInput({
-      audio: { data: base64Pcm, mimeType: "audio/pcm;rate=16000" },
+      audio: { data: base64Pcm, mimeType: "audio/pcm;rate=8000" },
     });
   }
 
@@ -136,7 +162,7 @@ Reported situation: ${situation}
 YOUR SCRIPT (under 60 seconds total):
 1. IMMEDIATELY say: "Hi, this is Turnkey Agent calling from Lemon Property. I'm calling about the issue you reported."
 2. Confirm: "Can you tell me — is the water still actively flowing?" (or appropriate question)
-3. After they respond, reassure: "Got it. I'm dispatching vendors right now. I'll call you back within 15 minutes with a confirmed arrival time."
+3. After they respond, reassure: "Got it. I'm dispatching vendors right now. I'll call you back once a vendor is confirmed with an ETA."
 4. End: "Hang tight, we're on it." Then stop talking.
 
 ${VOICE_RULES}`,
