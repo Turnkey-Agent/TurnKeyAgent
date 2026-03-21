@@ -7,10 +7,8 @@ import { ActiveCallsPanel } from "@/components/dashboard/ActiveCallsPanel";
 import { GeminiActivityFeed } from "@/components/dashboard/GeminiActivityFeed";
 import { IncidentCard } from "@/components/dashboard/IncidentCard";
 import { EventTimeline } from "@/components/dashboard/EventTimeline";
-import { QuoteComparison } from "@/components/dashboard/QuoteComparison";
 import { CallTranscript } from "@/components/dashboard/CallTranscript";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
-import type { Incident } from "@/lib/types";
 
 const BRIDGE_URL = process.env.NEXT_PUBLIC_BRIDGE_URL || "http://localhost:3456";
 
@@ -183,7 +181,7 @@ export default function DashboardPage() {
           </div>
           <span className="text-sm font-semibold text-[var(--text)]">Turnkey Agent</span>
           <span className="text-[var(--border)]">·</span>
-          <span className="text-sm text-[var(--text-muted)]">Lemon Property</span>
+          <span className="text-sm text-[var(--text-muted)]">{propertyName}</span>
         </div>
         <div className="flex items-center gap-3">
           {incident && <StatusBadge status={incident.status} />}
