@@ -1,7 +1,6 @@
 {
   "name": "turnkey-agent",
   "private": true,
-  "workspaces": ["bridge", "dashboard"],
   "scripts": {
     "dev:bridge": "cd bridge && npx tsx src/index.ts",
     "dev:dashboard": "cd dashboard && npm run dev",
@@ -9,10 +8,5 @@
   },
   "engines": {
     "node": ">=20.0.0"
-  },
-  "dependencies": {
-    "better-auth": "^1.4.0",
-    "pg": "^8.13.0",
-    "@types/pg": "^8.20.0"
   }
 }
