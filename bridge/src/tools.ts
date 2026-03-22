@@ -36,16 +36,24 @@ export async function logCallEvent(
   summary?: string
 ) {
   try {
-    await supabase.from("call_logs").insert({
+    const { data, error } = await supabase.from("call_logs").insert({
       incident_id: incidentId || null,
       direction,
       participant_type: participantType,
       participant_phone: participantPhone,
       twilio_call_sid: callSid || null,
       summary: summary || null,
-    });
+      status: "active",
+      transcript: "",
+    }).select("id").single();
+    
+    if (error) {
+      console.error("[logCallEvent] Failed to insert:", error);
+    } else {
+      console.log(`[logCallEvent] Created call_log: ${data?.id}`);
+    }
   } catch (e) {
-    console.error("[logCallEvent]", e);
+    console.error("[logCallEvent] Exception:", e);
   }
 }
 

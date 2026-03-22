@@ -60,9 +60,9 @@ export default function DashboardPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           situation: desc,
-          guestPhone: "+13142990513",    // Ayush
+          guestPhone: "+14085812962",     // Arnav (you)
           vendor1Phone: "+12832328091",   // Chow
-          vendor2Phone: "+14085812962",   // Arnav
+          vendor2Phone: "+13142990513",   // Ayush
           landlordPhone: "+17654134446",  // Ben
         }),
       });

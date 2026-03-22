@@ -103,7 +103,9 @@ create table if not exists call_logs (
   transcript text,
   summary text,
   sentiment text,
-  created_at timestamptz default now()
+  created_at timestamptz default now(),
+  started_at timestamptz,
+  ended_at timestamptz
 );
 
 -- ============================================

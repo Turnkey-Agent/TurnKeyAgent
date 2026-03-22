@@ -5,7 +5,10 @@
   "scripts": {
     "dev:bridge": "cd bridge && npx tsx src/index.ts",
     "dev:dashboard": "cd dashboard && npm run dev",
-    "setup:twilio": "npx tsx scripts/setup-twilio.ts"
+    "dev": "npm run dev:bridge & npm run dev:dashboard",
+    "start": "npm run dev",
+    "setup:twilio": "npx tsx scripts/setup-twilio.ts",
+    "test:supabase": "npx tsx scripts/test-supabase.ts"
   },
   "engines": {
     "node": ">=20.0.0"

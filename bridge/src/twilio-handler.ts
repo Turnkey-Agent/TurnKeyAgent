@@ -3,7 +3,7 @@ import type { WebSocket as WS } from "ws";
 import { config } from "./config.js";
 import { GeminiLiveSession, SYSTEM_PROMPTS } from "./gemini-session.js";
 import { twilioToGemini, geminiToTwilio } from "./audio-utils.js";
-import { triggerCallEnd } from "./workflow.js";
+import { triggerCallEnd, saveTwilioCallDetails } from "./workflow.js";
 import { supabase, logActivity } from "./tools.js";
 
 // Active calls
@@ -103,17 +103,25 @@ export function handleMediaStream(ws: WS): void {
         callType = ctx?.type || direction;
 
         // Create call_log entry immediately so dashboard shows the active call
+        console.log(`[WS] Creating call_log entry for callSid: ${callSid}, direction: ${direction}, type: ${callType}`);
         try {
-          const { data: logEntry } = await supabase.from("call_logs").insert({
+          const { data: logEntry, error: insertError } = await supabase.from("call_logs").insert({
             direction: direction === "inbound" ? "inbound" : "outbound",
             participant_type: callType,
+            participant_phone: params.callerNumber || null,
             twilio_call_sid: callSid,
             transcript: "",
             status: "active",
+            started_at: new Date().toISOString(),
           }).select("id").single();
-          if (logEntry) callLogId = logEntry.id;
+          if (insertError) {
+            console.error(`[WS] Failed to create call_log:`, insertError);
+          } else if (logEntry) {
+            callLogId = logEntry.id;
+            console.log(`[WS] Created call_log with ID: ${callLogId}`);
+          }
         } catch (e) {
-          console.error("[WS] Failed to create call_log:", e);
+          console.error("[WS] Exception creating call_log:", e);
         }
 
         // Check for pre-warmed session first (already connected to Gemini!)
@@ -182,29 +190,61 @@ export function handleMediaStream(ws: WS): void {
         break;
 
       case "stop":
-        console.log(`[WS] Stopped: ${streamSid}`);
+        console.log(`[WS] Stopped: ${streamSid}, callSid: ${callSid}, callLogId: ${callLogId}`);
         if (geminiSession) { await geminiSession.close(); geminiSession = null; }
         activeCalls.delete(callSid);
-        // Mark call_log as completed with final transcript
+
+        // Update call_log status and save Twilio details
         if (callLogId) {
-          supabase.from("call_logs").update({
+          console.log(`[WS] Updating call_logs status to completed for ${callLogId}`);
+          const { error: updateError } = await supabase.from("call_logs").update({
             status: "completed",
             transcript: transcriptParts.join("\n"),
-          }).eq("id", callLogId).then(() => {});
+            ended_at: new Date().toISOString(),
+          }).eq("id", callLogId);
+          if (updateError) {
+            console.error(`[WS] Failed to update call_logs:`, updateError);
+          } else {
+            console.log(`[WS] Successfully updated call_logs`);
+          }
         }
+
+        // Fetch and save Twilio call details to separate table
+        if (callLogId && callSid) {
+          console.log(`[WS] Calling saveTwilioCallDetails(${callLogId}, ${callSid})`);
+          await saveTwilioCallDetails(callLogId, callSid);
+        } else {
+          console.log(`[WS] Skipping Twilio save - missing callLogId(${callLogId}) or callSid(${callSid})`);
+        }
+
         triggerCallEnd(callSid);
         break;
     }
   });
 
   ws.on("close", async () => {
+    console.log(`[WS] WebSocket closed, callSid: ${callSid}, callLogId: ${callLogId}`);
     if (geminiSession) { await geminiSession.close(); geminiSession = null; }
+
+    // Update call_log status
     if (callLogId) {
-      supabase.from("call_logs").update({
+      console.log(`[WS] Updating call_logs on close for ${callLogId}`);
+      const { error: updateError } = await supabase.from("call_logs").update({
         status: "completed",
         transcript: transcriptParts.join("\n"),
-      }).eq("id", callLogId).then(() => {});
+        ended_at: new Date().toISOString(),
+      }).eq("id", callLogId);
+      if (updateError) {
+        console.error(`[WS] Failed to update call_logs on close:`, updateError);
+      }
     }
+
+    // Fetch and save Twilio call details to separate table
+    if (callLogId && callSid) {
+      console.log(`[WS] Calling saveTwilioCallDetails on close (${callLogId}, ${callSid})`);
+      await saveTwilioCallDetails(callLogId, callSid);
+    }
+
     if (callSid) { activeCalls.delete(callSid); triggerCallEnd(callSid); }
   });
 

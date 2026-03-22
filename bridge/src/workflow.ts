@@ -287,3 +287,95 @@ export function getWorkflowByIncident(incidentId: string) {
   const wfId = incidentWorkflowMap.get(incidentId);
   return wfId ? workflows.get(wfId) : undefined;
 }
+
+/**
+ * Fetch Twilio call details and save to twilio_call_logs table
+ */
+export async function saveTwilioCallDetails(callLogId: string, callSid: string): Promise<void> {
+  const authHeader = Buffer.from(`${config.twilioAccountSid}:${config.twilioAuthToken}`).toString("base64");
+
+  try {
+    // Fetch call details
+    const callRes = await fetch(
+      `https://api.twilio.com/2010-04-01/Accounts/${config.twilioAccountSid}/Calls/${callSid}.json`,
+      {
+        headers: { Authorization: `Basic ${authHeader}` },
+      }
+    );
+
+    if (!callRes.ok) {
+      console.error(`[Twilio] Failed to fetch call details for ${callSid}`);
+      return;
+    }
+
+    const callData = await callRes.json();
+
+    // Fetch recordings for this call
+    const recordingRes = await fetch(
+      `https://api.twilio.com/2010-04-01/Accounts/${config.twilioAccountSid}/Calls/${callSid}/Recordings.json`,
+      {
+        headers: { Authorization: `Basic ${authHeader}` },
+      }
+    );
+
+    let recordingSid: string | null = null;
+    let recordingUrl: string | null = null;
+    let recordingDuration: number | null = null;
+
+    if (recordingRes.ok) {
+      const recordings = await recordingRes.json();
+      if (recordings.recordings && recordings.recordings.length > 0) {
+        const rec = recordings.recordings[0];
+        recordingSid = rec.sid;
+        recordingUrl = `https://api.twilio.com/2010-04-01/Accounts/${config.twilioAccountSid}/Recordings/${rec.sid}.mp3`;
+        recordingDuration = parseInt(rec.duration) || null;
+      }
+    }
+
+    // Save to twilio_call_logs table
+    const insertData = {
+      call_log_id: callLogId,
+      twilio_call_sid: callData.sid,
+      twilio_account_sid: callData.account_sid,
+      from_number: callData.from,
+      to_number: callData.to,
+      status: callData.status,
+      direction: callData.direction,
+      start_time: callData.start_time ? new Date(callData.start_time).toISOString() : null,
+      end_time: callData.end_time ? new Date(callData.end_time).toISOString() : null,
+      duration_seconds: parseInt(callData.duration) || null,
+      price: callData.price ? parseFloat(callData.price) : null,
+      price_unit: callData.price_unit || 'USD',
+      uri: callData.uri,
+      recording_sid: recordingSid,
+      recording_url: recordingUrl,
+      recording_duration_seconds: recordingDuration,
+      raw_twilio_response: callData || {},
+    };
+
+    // Log the actual insert attempt
+    console.log(`[Twilio] Insert data prepared for ${callSid}:`);
+    console.log(`  - call_log_id: ${insertData.call_log_id}`);
+    console.log(`  - twilio_call_sid: ${insertData.twilio_call_sid}`);
+    console.log(`  - status: ${insertData.status}`);
+    console.log(`  - duration: ${insertData.duration_seconds}s`);
+    console.log(`  - price: $${insertData.price}`);
+    console.log(`  - has recording: ${insertData.recording_url ? 'yes' : 'no'}`);
+
+    console.log(`[Twilio] Attempting to save call details for ${callSid}:`, JSON.stringify(insertData, null, 2));
+
+    const { error } = await supabase.from("twilio_call_logs").insert(insertData);
+
+    if (error) {
+      console.error(`[Twilio] FAILED to save call details for ${callSid}:`, error);
+      console.error(`[Twilio] Error details:`, JSON.stringify(error, null, 2));
+    } else {
+      console.log(`[Twilio] SUCCESS - Saved call details for ${callSid}: ${callData.duration}s, $${callData.price}, recording: ${recordingUrl ? 'yes' : 'no'}`);
+    }
+  } catch (err) {
+    console.error(`[Twilio] EXCEPTION fetching/saving call details for ${callSid}:`, err);
+    if (err instanceof Error) {
+      console.error(`[Twilio] Error stack:`, err.stack);
+    }
+  }
+}
