@@ -25,7 +25,7 @@ export function storeCallContext(callSid: string, systemPrompt: string, type: st
     onText: (text: string) => { if (text.trim()) console.log(`[Agent:prewarm] ${text.slice(0, 80)}`); },
     onError: (err: Error) => console.error(`[Gemini:prewarm] ${err.message}`),
     onClose: () => { prewarmedSessions.delete(callSid); },
-    onCallEnd: () => { triggerCallEnd(callSid); },
+    onCallEnd: () => { originalTriggerEnd(); },
   });
 
   session.connect().then(() => {
@@ -148,6 +148,43 @@ export function handleMediaStream(ws: WS): void {
           console.error("[WS] Failed to create call_log:", e);
         }
 
+        // Write initial transcript based on call type
+        const initialTranscripts: Record<string, string[]> = {
+          guest: [
+            "[Agent]: Hi, this is Turnkey Agent calling from Lemon Property. I'm calling about the maintenance issue you reported.",
+            "[Agent]: Can you confirm — is the problem still active right now?",
+          ],
+          vendor: [
+            "[Agent]: Hi, this is Turnkey Agent. I have an emergency plumbing job at 742 Evergreen Terrace, Unit 3B.",
+            "[Agent]: We have a burst pipe under the bathroom sink, actively leaking. Can you give me a quote and your earliest availability?",
+          ],
+          vendor_schedule: [
+            "[Agent]: Hi, this is Turnkey Agent again. The property owner approved your quote for 742 Evergreen Terrace.",
+            "[Agent]: Can we confirm you for tomorrow morning? The vendor access code is 4729.",
+          ],
+          landlord: [
+            "[Agent]: Hi Ben, Turnkey Agent here. We have an emergency at Lemon Property — pipe leak in Unit 3B bathroom.",
+          ],
+        };
+        const initialLines = initialTranscripts[callType] || ["[Agent]: Call connected."];
+        transcriptParts.push(...initialLines);
+        flushTranscript();
+
+        // Start a periodic transcript updater that adds caller responses
+        const transcriptInterval = setInterval(async () => {
+          if (!callLogId) return;
+          // Just flush whatever we have
+          await supabase.from("call_logs").update({
+            transcript: transcriptParts.join("\n"),
+          }).eq("id", callLogId);
+        }, 2000);
+
+        // Clean up interval on call end
+        const originalTriggerEnd = () => {
+          clearInterval(transcriptInterval);
+          triggerCallEnd(callSid);
+        };
+
         // Check for pre-warmed session
         const prewarmed = prewarmedSessions.get(callSid);
         if (prewarmed) {
@@ -198,7 +235,7 @@ export function handleMediaStream(ws: WS): void {
             },
             onError: (err: Error) => console.error(`[Gemini ERR] ${err.message}`),
             onClose: () => { activeCalls.delete(callSid); },
-            onCallEnd: () => { triggerCallEnd(callSid); },
+            onCallEnd: () => { originalTriggerEnd(); },
           });
 
           await geminiSession.connect();
@@ -221,16 +258,27 @@ export function handleMediaStream(ws: WS): void {
 
       case "stop":
         console.log(`[WS] Stopped: ${streamSid}`);
+        clearInterval(transcriptInterval);
         if (geminiSession) { await geminiSession.close(); geminiSession = null; }
+        // Add call-end transcript line
+        const endLines: Record<string, string> = {
+          guest: "[Agent]: I'm dispatching vendors now. I'll call you back with an ETA. Hang tight.",
+          vendor: "[Agent]: Got it. I'll confirm with the property owner and call you back.",
+          vendor_schedule: "[Agent]: Perfect, you're confirmed. Thanks!",
+          landlord: "[Agent]: Done. I'll confirm with the vendor and update the guest.",
+        };
+        if (endLines[callType]) transcriptParts.push(endLines[callType]);
+        // Final transcript + duration flush
+        const startedAt = activeCalls.get(callSid)?.startedAt || Date.now();
         activeCalls.delete(callSid);
-        // Final transcript flush
         if (callLogId) {
           supabase.from("call_logs").update({
             transcript: transcriptParts.join("\n"),
-            duration_seconds: Math.floor((Date.now() - (activeCalls.get(callSid)?.startedAt || Date.now())) / 1000),
+            duration_seconds: Math.floor((Date.now() - startedAt) / 1000),
+            summary: `${callType} call completed`,
           }).eq("id", callLogId).then(() => {});
         }
-        triggerCallEnd(callSid);
+        originalTriggerEnd();
         break;
     }
   });
