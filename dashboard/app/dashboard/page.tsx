@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useIncidentRealtime } from "@/hooks/useIncidentRealtime";
 import { ActiveCallsPanel } from "@/components/dashboard/ActiveCallsPanel";
@@ -9,6 +10,7 @@ import { IncidentCard } from "@/components/dashboard/IncidentCard";
 import { EventTimeline } from "@/components/dashboard/EventTimeline";
 import { CallTranscript } from "@/components/dashboard/CallTranscript";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
+import { History } from "lucide-react";
 
 const BRIDGE_URL = process.env.NEXT_PUBLIC_BRIDGE_URL || "http://localhost:3456";
 
@@ -34,6 +36,7 @@ export default function DashboardPage() {
   const [incidentId, setIncidentId] = useState<string | null>(DEMO_INCIDENT_ID);
   const [sidebarWidth, setSidebarWidth] = useState(256);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [propertyId, setPropertyId] = useState<string | null>(null);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -58,6 +61,7 @@ export default function DashboardPage() {
         .limit(1)
         .single();
       if (prop) {
+        setPropertyId(prop.id);
         setPropertyName(prop.name);
         setPropertyAddress(prop.address);
         // Fetch first unit for this property
@@ -78,7 +82,6 @@ export default function DashboardPage() {
   // Workflow trigger form
   const [situation, setSituation] = useState("");
   const [deploying, setDeploying] = useState(false);
-  const [workflowActive, setWorkflowActive] = useState(false);
 
   const handleDeployAgent = async (overrideDescription?: string) => {
     const desc = overrideDescription || situation;
@@ -100,7 +103,6 @@ export default function DashboardPage() {
       const data = await res.json();
       if (data.incidentId) {
         setIncidentId(data.incidentId);
-        setWorkflowActive(true);
       }
     } catch (err) {
       console.error("Deploy failed:", err);
@@ -136,6 +138,10 @@ export default function DashboardPage() {
     useIncidentRealtime(incidentId);
 
   const incident = liveIncident;
+  const historyPropertyId = incident?.property_id ?? propertyId;
+  const historyHref = historyPropertyId
+    ? `/dashboard/history?propertyId=${historyPropertyId}`
+    : "/dashboard/history";
 
   // Handle approval — calls bridge to trigger scheduling call
   const handleApprove = async (vendorId: string) => {
@@ -174,14 +180,25 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* ── Top nav ──────────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--background-blur)] backdrop-blur px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--background-blur)] backdrop-blur px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-xs font-bold text-white">
             TK
           </div>
           <span className="text-sm font-semibold text-[var(--text)]">Turnkey Agent</span>
           <span className="text-[var(--border)]">·</span>
-          <span className="text-sm text-[var(--text-muted)]">{propertyName}</span>
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="max-w-[12rem] truncate text-sm text-[var(--text-muted)] sm:max-w-none">
+              {propertyName}
+            </span>
+            <Link
+              href={historyHref}
+              className="flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-[11px] font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
+            >
+              <History size={12} />
+              <span>History</span>
+            </Link>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           {incident && <StatusBadge status={incident.status} />}
