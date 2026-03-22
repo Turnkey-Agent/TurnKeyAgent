@@ -34,24 +34,13 @@ export class GeminiLiveSession {
         model: config.geminiLiveModel,
         config: {
           systemInstruction: this.options.systemPrompt,
-          responseModalities: ["AUDIO", "TEXT"],
+          responseModalities: ["AUDIO"],
           speechConfig: {
             voiceConfig: {
               prebuiltVoiceConfig: { voiceName: "Aoede" },
             },
           },
           tools: [{ functionDeclarations: toolDeclarations }],
-          // Enable transcription so Gemini processes caller audio as conversation
-          inputAudioTranscription: {},
-          outputAudioTranscription: {},
-          // VAD: balanced settings for phone conversation
-          realtimeInputConfig: {
-            automaticActivityDetection: {
-              disabled: false,
-              prefixPaddingMs: 100,
-              silenceDurationMs: 500,
-            },
-          },
         },
         callbacks: {
           onopen: () => {
@@ -167,7 +156,7 @@ export class GeminiLiveSession {
       console.log(`[Audio] Caller -> Gemini: chunk #${this.audioChunksSent}, ${base64Pcm.length} b64 chars`);
     }
     this.session.sendRealtimeInput({
-      media: { data: base64Pcm, mimeType: "audio/pcm;rate=8000" },
+      media: { data: base64Pcm, mimeType: "audio/pcm;rate=16000" },
     });
   }
 

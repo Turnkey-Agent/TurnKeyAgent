@@ -20,9 +20,9 @@ export const config = {
   geminiReasoningModel: "gemini-2.0-flash",
 
   // Twilio
-  twilioAccountSid: process.env.TWILIO_ACCOUNT_SID || "",
-  twilioAuthToken: process.env.TWILIO_AUTH_TOKEN || "",
-  twilioPhoneNumber: process.env.TWILIO_PHONE_NUMBER || "+16282370507",
+  twilioAccountSid: required("TWILIO_ACCOUNT_SID"),
+  twilioAuthToken: required("TWILIO_AUTH_TOKEN"),
+  twilioPhoneNumber: required("TWILIO_PHONE_NUMBER"),
 
   // Supabase
   supabaseUrl: required("SUPABASE_URL"),

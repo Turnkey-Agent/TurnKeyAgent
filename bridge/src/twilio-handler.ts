@@ -10,15 +10,15 @@ import { supabase, logActivity } from "./tools.js";
 const activeCalls = new Map<string, { gemini: GeminiLiveSession; streamSid: string; startedAt: number }>();
 
 // Call context + pre-warmed Gemini sessions
-const callContexts = new Map<string, { systemPrompt: string; type: string }>();
+const callContexts = new Map<string, { systemPrompt: string; type: string; incidentId?: string }>();
 const prewarmedSessions = new Map<string, GeminiLiveSession>();
 
 /**
  * Store call context AND pre-warm Gemini session before the phone even rings.
  * By the time the user picks up, Gemini is already connected and ready to speak.
  */
-export function storeCallContext(callSid: string, systemPrompt: string, type: string) {
-  callContexts.set(callSid, { systemPrompt, type });
+export function storeCallContext(callSid: string, systemPrompt: string, type: string, incidentId?: string) {
+  callContexts.set(callSid, { systemPrompt, type, incidentId });
 
   // Pre-warm: connect Gemini now, attach audio handler later when media stream starts
   const session = new GeminiLiveSession({
@@ -102,11 +102,24 @@ export function handleMediaStream(ws: WS): void {
         const ctx = callContexts.get(callSid);
         callType = ctx?.type || direction;
 
+        // Map call type to human-readable name
+        const participantNames: Record<string, string> = {
+          guest: "Guest (Ayush)",
+          vendor: callSid.includes("+12832328091") ? "Vendor 1 (Chow)" : "Vendor 2 (Arnav)",
+          vendor_schedule: "Vendor (Scheduling)",
+          landlord: "Landlord (Ben)",
+        };
+
+        // Get incident_id from context so dashboard can filter
+        const incidentId = ctx?.incidentId || null;
+
         // Create call_log entry immediately so dashboard shows the active call
         try {
           const { data: logEntry } = await supabase.from("call_logs").insert({
+            incident_id: incidentId,
             direction: direction === "inbound" ? "inbound" : "outbound",
             participant_type: callType,
+            participant_name: participantNames[callType] || callType,
             twilio_call_sid: callSid,
             transcript: "",
             status: "active",
@@ -197,11 +210,15 @@ export function handleMediaStream(ws: WS): void {
         console.log(`[WS] Stopped: ${streamSid}`);
         if (geminiSession) { await geminiSession.close(); geminiSession = null; }
         activeCalls.delete(callSid);
-        // Mark call_log as completed with final transcript
+        // Mark call_log as completed with final transcript + duration
         if (callLogId) {
+          const call = activeCalls.get(callSid);
+          const duration = call ? Math.floor((Date.now() - call.startedAt) / 1000) : 0;
           supabase.from("call_logs").update({
             status: "completed",
             transcript: transcriptParts.join("\n"),
+            summary: transcriptParts.slice(-3).join(" ").slice(0, 200),
+            duration_seconds: duration,
           }).eq("id", callLogId).then(() => {});
         }
         triggerCallEnd(callSid);

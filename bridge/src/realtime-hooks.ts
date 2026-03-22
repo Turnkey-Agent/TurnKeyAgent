@@ -22,7 +22,7 @@ export async function logGeminiActivity(
   incidentId: string,
   model: string,
   label: string,
-  status: "working" | "completed" | "error",
+  status: "active" | "done" | "error",
   result?: string
 ): Promise<void> {
   try {
@@ -53,7 +53,7 @@ export async function generateIncidentImage(
       incidentId,
       "gemini-2.5-flash-image",
       "Generating contextual image",
-      "working"
+      "active"
     );
 
     const prompt = buildImagePrompt(category, description);
@@ -125,7 +125,7 @@ export async function generateIncidentImage(
       incidentId,
       "gemini-2.5-flash-image",
       "Image generated",
-      "completed",
+      "done",
       imageUrl ? "Image attached to incident" : "Image generation failed"
     );
 
@@ -232,7 +232,7 @@ export async function generateDraftInvoice(
       incidentId,
       "system",
       `Draft invoice ${invoiceNumber} created`,
-      "completed",
+      "done",
       `$${amount} + $${tax} tax = $${total}`
     );
 
@@ -301,7 +301,7 @@ export async function finalizeInvoice(incidentId: string): Promise<void> {
       incidentId,
       "system",
       "Invoice approved — pending payment",
-      "completed",
+      "done",
       `${drafts.length} invoice(s) finalized`
     );
 
@@ -369,7 +369,7 @@ Cost: $${incident.quotes?.[0]?.amount || 0}
       incidentId,
       "gemini-embedding-2",
       "Incident embedded for future search",
-      "completed"
+      "done"
     );
 
     console.log(`[hooks] Resolved incident ${incidentId} embedded into maintenance_logs`);

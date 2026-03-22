@@ -76,7 +76,7 @@ export async function startWorkflow(cfg: WorkflowConfig): Promise<WorkflowState>
   await logActivity(state.incidentId!, "Calling guest to confirm issue", "active");
 
   // Step 1: Call the guest
-  const callSid = await makeCall(cfg.guestPhone, "guest", cfg.situation, cfg.ngrokUrl);
+  const callSid = await makeCall(cfg.guestPhone, "guest", cfg.situation, cfg.ngrokUrl, state.incidentId!);
   if (callSid) {
     await logCallEvent(state.incidentId!, "outbound", "guest", cfg.guestPhone, callSid, "Calling guest to confirm issue");
 
@@ -108,7 +108,7 @@ async function onGuestCallEnd(workflowId: string) {
   await logActivity(state.incidentId!, "Calling Vendor 1 for quote", "active");
 
   // Call vendors SEQUENTIALLY — vendor 1 first, then vendor 2 after vendor 1 ends
-  const v1Sid = await makeCall(state.config.vendor1Phone, "vendor", state.config.situation, state.config.ngrokUrl);
+  const v1Sid = await makeCall(state.config.vendor1Phone, "vendor", state.config.situation, state.config.ngrokUrl, state.incidentId!);
 
   if (v1Sid) {
     await logCallEvent(state.incidentId!, "outbound", "vendor", state.config.vendor1Phone, v1Sid);
@@ -131,7 +131,7 @@ async function onVendorCallEnd(workflowId: string, vendorPhone: string) {
   // After vendor 1 → call vendor 2
   if (state.vendorCallsDone === 1) {
     await logActivity(state.incidentId!, "Calling Vendor 2 for quote", "active");
-    const v2Sid = await makeCall(state.config.vendor2Phone, "vendor", state.config.situation, state.config.ngrokUrl);
+    const v2Sid = await makeCall(state.config.vendor2Phone, "vendor", state.config.situation, state.config.ngrokUrl, state.incidentId!);
     if (v2Sid) {
       await logCallEvent(state.incidentId!, "outbound", "vendor", state.config.vendor2Phone, v2Sid);
       registerCallEndCallback(v2Sid, () => onVendorCallEnd(workflowId, state.config.vendor2Phone));
@@ -139,17 +139,59 @@ async function onVendorCallEnd(workflowId: string, vendorPhone: string) {
     return;
   }
 
-  // Both vendors done → present quotes for approval
+  // Both vendors done → analyze quotes with Gemini 3.1 Flash → present for approval
   state.status = "pending_approval";
+
+  // Fetch quotes from DB
+  const { data: incidentData } = await supabase
+    .from("incidents")
+    .select("quotes")
+    .eq("id", state.incidentId!)
+    .single();
+
+  const dbQuotes = incidentData?.quotes || [];
+
+  // Use Gemini 3.1 Flash to analyze and recommend
+  let recommendation = "Review both quotes and select a vendor.";
+  if (dbQuotes.length >= 2) {
+    try {
+      const analysis = await analyzeQuotes(dbQuotes, state.config.situation);
+      recommendation = analysis.summary || analysis.reasoning;
+      console.log(`[Workflow ${workflowId}] AI recommendation: ${recommendation}`);
+
+      // Mark the recommended quote
+      const updatedQuotes = dbQuotes.map((q: any) => ({
+        ...q,
+        recommended: q.vendor_id === analysis.selected_vendor_id ||
+          q.vendor_phone === analysis.selected_vendor_id,
+      }));
+
+      await supabase.from("incidents").update({ quotes: updatedQuotes }).eq("id", state.incidentId!);
+      await logActivity(state.incidentId!, `AI Recommendation: ${recommendation}`, "done");
+    } catch (err) {
+      console.error(`[Workflow ${workflowId}] Quote analysis failed:`, err);
+      // Fallback: recommend the cheaper one
+      if (dbQuotes.length >= 2) {
+        const sorted = [...dbQuotes].sort((a: any, b: any) => (a.amount || 999) - (b.amount || 999));
+        const updatedQuotes = dbQuotes.map((q: any) => ({
+          ...q,
+          recommended: q === sorted[0],
+        }));
+        await supabase.from("incidents").update({ quotes: updatedQuotes }).eq("id", state.incidentId!);
+        recommendation = `Recommend ${sorted[0].vendor_name || "Vendor 1"} — lowest price at $${sorted[0].amount}`;
+      }
+    }
+  }
 
   await supabase.from("incidents").update({
     status: "pending_approval",
-    timeline: await appendTimeline(state.incidentId!, "Both vendor quotes received — awaiting landlord approval"),
+    timeline: await appendTimeline(state.incidentId!,
+      `Both quotes received. ${recommendation}. Awaiting landlord approval.`),
   }).eq("id", state.incidentId!);
 
   await logActivity(state.incidentId!, "Quotes ready — awaiting landlord approval", "active");
 
-  console.log(`[Workflow ${workflowId}] Both quotes received — waiting for landlord approval on dashboard`);
+  console.log(`[Workflow ${workflowId}] Both quotes received — waiting for landlord approval`);
 }
 
 /**
@@ -173,6 +215,8 @@ export async function approveVendor(incidentId: string, vendorPhone: string): Pr
 
   await supabase.from("incidents").update({
     status: "approved",
+    approved_by: "Ben (Landlord)",
+    approved_at: new Date().toISOString(),
     timeline: await appendTimeline(state.incidentId!, `Landlord approved vendor ${vendorPhone}`),
   }).eq("id", state.incidentId!);
 
@@ -181,7 +225,8 @@ export async function approveVendor(incidentId: string, vendorPhone: string): Pr
     vendorPhone,
     "vendor_schedule",
     state.config.situation,
-    state.config.ngrokUrl
+    state.config.ngrokUrl,
+    state.incidentId!
   );
 
   if (callSid) {
@@ -222,7 +267,7 @@ export function triggerCallEnd(callSid: string) {
   }
 }
 
-async function makeCall(to: string, type: string, situation: string, ngrokUrl: string): Promise<string | null> {
+async function makeCall(to: string, type: string, situation: string, ngrokUrl: string, incidentId?: string): Promise<string | null> {
   const authHeader = Buffer.from(`${config.twilioAccountSid}:${config.twilioAuthToken}`).toString("base64");
   const webhookUrl = `${ngrokUrl}/twilio/voice/outbound`;
 
@@ -257,7 +302,7 @@ async function makeCall(to: string, type: string, situation: string, ngrokUrl: s
     );
     const data = await res.json();
     if (data.sid) {
-      storeCallContext(data.sid, systemPrompt, type);
+      storeCallContext(data.sid, systemPrompt, type, incidentId);
       console.log(`[Workflow] Call ${type} → ${to}: ${data.sid}`);
       return data.sid;
     } else {
